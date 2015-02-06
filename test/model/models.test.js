@@ -1,8 +1,13 @@
-var Models = require('./models');
+var Models = require('../../src/model/models');
 
 describe('model', function() {
-    it('can register new model', function() {
+    it('can define new model', function() {
         Models.define('tour', {});
+        Models.Tour = null;
+    });
+
+    it('can define model without properties', function() {
+        Models.define('tour');
         Models.Tour = null;
     });
 

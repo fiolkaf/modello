@@ -19,8 +19,9 @@ function storeDefaults(name, array) {
     });
 }
 
+
 var DataAdapters = {
-    register: function(type, Constructor, defaultArray) {
+    register: function(type, dataAdapter, defaultArray) {
         var constructorName = type.substr(0, 1).toUpperCase() + type.substr(1);
         var modelConstructor = Models[constructorName];
 
@@ -32,12 +33,17 @@ var DataAdapters = {
             throw constructorName + 'has already data adapter defined.';
         }
 
-        var dataAdapter = new Constructor(type);
-        var dataProvider = new DataProvider(modelConstructor, dataAdapter);
+        var dataProvider = new DataProvider(dataAdapter);
 
-        modelConstructor.get = dataProvider.get;
-        modelConstructor.getAll = dataProvider.getAll;
-        modelConstructor.save = dataProvider.save;
+        modelConstructor.get = function(uri) {
+            return dataProvider.get(type, uri);
+        };
+        modelConstructor.getAll = function(filter) {
+            return dataProvider.getAll(type, filter);
+        };
+        modelConstructor.save = function(data) {
+            return dataProvider.save(type, data);
+        };
         modelConstructor.remove = dataProvider.remove;
 
         storeDefaults(constructorName, defaultArray);

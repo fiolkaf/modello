@@ -1,44 +1,48 @@
+var Models = require('../model/models');
 var Disposable = require('osync').Mixin.Disposable;
 
-var DataProvider = function(Model, dataAdapter) {
+var DataProvider = function(dataAdapter) {
     Disposable.mixin(this);
+    var _cache = {};
+    var _self = this;
 
-    function createModel(data) {
-        var model = new Model(data);
-        model.on('change', function(evt) {
-            //TODO evt.target
+    function createModel(type, data) {
+        var model = new Models.getByType(type)(data);
+        var unsubscribe = model.on('change', function(evt) {
+            var data = evt.target || model;
+            _self.save(type, data);
         });
+        _self.addDisposer(unsubscribe);
+        _cache[data.uri] = model;
         return model;
     }
 
-    function get(uri) {
-        var data = dataAdapter.get(uri);
+    this.get = function(type, uri) {
+        if (_cache[uri]) {
+            return _cache[uri];
+        }
+
+        var data = dataAdapter.get(type, uri);
         if (!data) {
             return data;
         }
-        return createModel(data);
-    }
+        return createModel(type, data);
+    };
 
-    function getAll(filter) {
-        var array = dataAdapter.getAll(filter);
+    this.getAll = function(type, filter) {
+        var array = dataAdapter.getAll(type, filter);
         return array.map(function(data) {
-            return createModel(data);
+            return _cache[data.uri] || createModel(type, data);
         });
-    }
+    };
 
-    function save(data) {
-        dataAdapter.save(data);
-    }
+    this.save = function(type, data) {
+        dataAdapter.save(type, data);
+    };
 
-    function remove(uri) {
+    this.remove = function(uri) {
+        delete _cache.uri;
         dataAdapter.remove(uri);
-    }
-
-    return {
-        get: get,
-        getAll: getAll,
-        remove: remove,
-        save: save
     };
 };
 

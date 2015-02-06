@@ -23,10 +23,12 @@
     "karma-es5-shim": "0.0.4",
     "karma-mocha": "^0.1.10",
     "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sinon": "^1.0.4",
     "mocha": "^2.1.0",
+    "sinon": "^1.12.2",
     "unexpected": "^5.8.1"
   },
   "dependencies": {
-    "osync": "^0.0.2"
+    "osync": "^0.0.8"
   }
 }

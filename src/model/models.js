@@ -1,4 +1,4 @@
-var RemoteObject = require('osync').RemoteObject;
+var Observable = require('osync').ObservableObject;
 
 var DataAdapters = require('../data/dataAdapters');
 var TypeDefinition = require('./typeDefinition');
@@ -22,8 +22,13 @@ function createConstructor(type, extend) {
         }
         data.uri = data.uri ? data.uri : '/' + type + 's/' + guid();
 
-        var remoteObject = new RemoteObject(data);
-        remoteObject.type = type;
+        var remoteObject = new Observable.ObservableObject(data);
+        var unsubscribe = remoteObject.on('change', function(evt) {
+            var target = evt.target || remoteObject;
+            var ev = Object.assign({}, evt, {key: evt.key.split('.').pop() });
+            target._trigger(ev.key + 'Change', ev);
+        });
+        remoteObject.addDisposer(unsubscribe);
 
         return remoteObject;
     };
@@ -41,7 +46,7 @@ var Models = {
         }
 
         Models[name] = createConstructor(type, extend);
-        Models[name].Type = new TypeDefinition(type, definition);
+        Models[name].Type = new TypeDefinition(type, definition || {});
 
         return Models[name];
     }

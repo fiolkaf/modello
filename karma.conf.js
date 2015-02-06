@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'commonjs', 'es5-shim'],
+    frameworks: ['mocha', 'commonjs', 'sinon', 'es5-shim'],
 
 
     // list of files / patterns to load in the browser
@@ -18,7 +18,8 @@ module.exports = function(config) {
         { pattern: 'node_modules/osync/**/**/!(*test).js', included: 'false' },
         { pattern: 'node_modules/es6-shim/*.js', included: 'true' },
         { pattern: 'node_modules/unexpected/unexpected.js', watched: 'false', served:  'true', included: 'false' },
-         'src/**/*.js'
+         'src/**/*.js',
+         'test/**/*.js'
     ],
 
 
@@ -33,6 +34,7 @@ module.exports = function(config) {
         'node_modules/es6-shim/*.js': ['commonjs'],
         'node_modules/osync/**/*.js': ['commonjs'],
         'src/**/*.js': ['commonjs'],
+        'test/**/*.js': ['commonjs'],
         'node_modules/unexpected/unexpected.js': ['commonjs']
     },
 

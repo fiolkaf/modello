@@ -1,21 +1,17 @@
 var expect = require('unexpected/unexpected');
 
-var Models = require('../model/models');
-var LocalStorageAdapter = require('../data/localStorageAdapter');
+var Models = require('../src/model/models');
+var LocalStorageAdapter = require('../src/data/localStorageAdapter');
 
 describe('model', function() {
     it('can register model', function() {
         Models.define('tour', {
-            active: {
-                save: false
-            },
-            tasks: { type: 'task', array: true }
+            active: { save: false }
         });
         LocalStorageAdapter.register('tour', [{
             uri: '/tours/welcome',
             default: true
         }]);
-
         var tour = Models.Tour.get('/tours/welcome');
 
         expect(tour.uri, 'to equal', '/tours/welcome');
@@ -26,6 +22,7 @@ describe('model', function() {
     });
 
     it('can register nested models', function() {
+        Models.define('task', {});
         Models.define('tour', {
             tasks: { type: 'task', array: true }
         });
@@ -39,7 +36,6 @@ describe('model', function() {
             activeTask: 0
         }]);
 
-        Models.define('task', {});
         LocalStorageAdapter.register('task', [{
             uri: '/tasks/read-manual',
             active: false
