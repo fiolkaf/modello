@@ -7,6 +7,7 @@ function flattenNestedObjects(properties, data) {
         }
         if (!property.array) {
             result[propertyName] = result[propertyName].uri;
+            return;
         }
 
         result[propertyName] = result[propertyName].map(function(obj) {
@@ -26,6 +27,7 @@ function resolveNestedObjects(properties, data, getLookup) {
         }
         if (!property.array) {
             result[propertyName] = getLookup(property.type, result[propertyName]);
+            return;
         }
 
         result[propertyName] = result[propertyName].map(function(uri) {
