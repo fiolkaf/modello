@@ -1,15 +1,6 @@
-var Observable = require('osync').ObservableObject;
-
-var DataAdapters = require('../data/dataAdapters');
+var Model = require('./model');
 var TypeDefinition = require('./typeDefinition');
-
-function guid() {
-    function _p8(s) {
-        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
-        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
-    }
-    return _p8() + _p8(true) + _p8(true) + _p8();
-}
+var DataAdapters = require('../data/dataAdapters');
 
 function getModelName(type) {
     return type.substr(0, 1).toUpperCase() + type.substr(1);
@@ -17,20 +8,7 @@ function getModelName(type) {
 
 function createConstructor(type, extend) {
     return function(data) {
-        if (!data) {
-            throw 'Data must be specified for ' + type;
-        }
-        data.uri = data.uri ? data.uri : '/' + type + 's/' + guid();
-
-        var remoteObject = new Observable.ObservableObject(data);
-        var unsubscribe = remoteObject.on('change', function(evt) {
-            var target = evt.target || remoteObject;
-            var ev = Object.assign({}, evt, {key: evt.key.split('.').pop() });
-            target._trigger(ev.key + 'Change', ev);
-        });
-        remoteObject.addDisposer(unsubscribe);
-
-        return remoteObject;
+        return new Model(data, extend);
     };
 }
 
@@ -39,14 +17,14 @@ var Models = {
         var constructorName = getModelName(type);
         return Models[constructorName];
     },
-    define: function(type, definition, extend) {
+    define: function(type, definition) {
         var name = getModelName(type);
         if (Models[name]) {
             throw 'Model type ' + type + ' already exists';
         }
-
-        Models[name] = createConstructor(type, extend);
-        Models[name].Type = new TypeDefinition(type, definition || {});
+        definition = definition || {};
+        Models[name] = createConstructor(type, definition);
+        Models[name].Type = new TypeDefinition(type, definition);
 
         return Models[name];
     }

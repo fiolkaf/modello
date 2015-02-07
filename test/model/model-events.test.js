@@ -1,7 +1,7 @@
 var expect = require('unexpected/unexpected');
 
-var Models = require('../src/model/models');
-var LocalStorageAdapter = require('../src/data/localStorageAdapter');
+var Models = require('../../src/model/models');
+var LocalStorageAdapter = require('../../src/data/localStorageAdapter');
 
 describe('model.events', function() {
     before(function() {
