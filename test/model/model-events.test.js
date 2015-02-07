@@ -43,7 +43,7 @@ describe('model.events', function() {
         var spy = sinon.spy();
         tour.on('doneChange', spy);
         tour.done = false;
-        tour.tasks[0].on('activeChange', spy);
+        tour.listenTo(tour.tasks[0], 'activeChange', spy);
         tour.tasks[0].active = true;
 
         expect(spy.calledTwice, 'to be true');

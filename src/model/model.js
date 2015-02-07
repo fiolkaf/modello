@@ -40,6 +40,17 @@ function Model(data, extend) {
         target._trigger(ev.key + 'Change', ev);
     });
     observable.addDisposer(unsubscribe);
+
+    observable.listenTo = function(target, topic, callback) {
+        if (typeof target === 'string') {
+            target = this;
+            topic = target;
+            callback = topic;
+        }
+        var subscribe = target.on(topic, callback);
+        observable.addDisposer(subscribe);
+    };
+
     extendFunctions(observable, extend);
     if (observable.init) {
         observable.init();

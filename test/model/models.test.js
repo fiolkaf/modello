@@ -7,12 +7,10 @@ describe('models', function() {
             Models.define('tour', {});
             Models.Tour = null;
         });
-
         it('can define model without properties', function() {
             Models.define('tour');
             Models.Tour = null;
         });
-
         it('can define model with properties', function() {
             Models.define('person', {
                 firstName: {},
@@ -63,9 +61,11 @@ describe('models', function() {
             var spy = sinon.spy();
             Models.define('tour', {
                 taskChanged: null,
-                task: { type: 'task' },
+                task: {
+                    type: 'task'
+                },
                 init: function() {
-                    this.task.on('change', spy);
+                    this.listenTo(this.task, 'change', spy);
                     this.taskChanged = true;
                 }
             });
