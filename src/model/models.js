@@ -2,13 +2,29 @@ var Model = require('./model');
 var TypeDefinition = require('./typeDefinition');
 var DataAdapters = require('../data/dataAdapters');
 
+function guid() {
+    function _p8(s) {
+        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+    }
+    return _p8() + _p8(true) + _p8(true) + _p8();
+}
+
 function getModelName(type) {
     return type.substr(0, 1).toUpperCase() + type.substr(1);
 }
 
 function createConstructor(type, extend) {
-    return function(data) {
-        return new Model(data, extend);
+    return function(data, save) {
+        if (!data.uri) {
+            data.uri = '/' + type + '/' + guid();
+        }
+
+        var model = new Model(data, extend);
+        if (save !== false && Models.getByType(type).save) {
+            Models.getByType(type).save(model);
+        }
+        return model;
     };
 }
 

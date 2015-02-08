@@ -1,25 +1,6 @@
 var Models = require('../model/models');
 var DataProvider = require('./dataProvider');
 
-function storeDefaults(name, array) {
-    if (!array) {
-        return;
-    }
-
-    array.forEach(function(item) {
-        if (!item.uri) {
-            throw 'You have to provide item uri' + item;
-        }
-
-        var result = Models[name].get(item.uri);
-
-        if (!result) {
-            Models[name].save(item);
-        }
-    });
-}
-
-
 var DataAdapters = {
     register: function(type, dataAdapter, defaultArray) {
         var constructorName = type.substr(0, 1).toUpperCase() + type.substr(1);
@@ -44,9 +25,10 @@ var DataAdapters = {
         modelConstructor.save = function(data) {
             return dataProvider.save(type, data);
         };
+        modelConstructor.create = function(data) {
+            return dataProvider.save(type, data);
+        };
         modelConstructor.remove = dataProvider.remove;
-
-        storeDefaults(constructorName, defaultArray);
     }
 };
 

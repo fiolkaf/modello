@@ -6,14 +6,19 @@ var DataProvider = function(dataAdapter) {
     var _cache = {};
     var _self = this;
 
-    function createModel(type, data) {
-        var model = new Models.getByType(type)(data);
+    function registerModel(type, model) {
         var unsubscribe = model.on('change', function(evt) {
             var data = evt.target || model;
             _self.save(type, data);
         });
         _self.addDisposer(unsubscribe);
-        _cache[data.uri] = model;
+        _cache[model.uri] = model;
+    }
+
+    function createModel(type, data) {
+        var create = new Models.getByType(type);
+        var model = create(data, false);
+        registerModel(model);
         return model;
     }
 
@@ -36,8 +41,12 @@ var DataProvider = function(dataAdapter) {
         });
     };
 
-    this.save = function(type, data) {
-        dataAdapter.save(type, data);
+    this.save = function(type, model) {
+        if (!_cache[model.uri]) {
+            registerModel(type, model);
+        }
+
+        dataAdapter.save(type, model);
     };
 
     this.remove = function(uri) {

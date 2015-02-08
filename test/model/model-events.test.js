@@ -6,13 +6,15 @@ var LocalStorageAdapter = require('../../src/data/localStorageAdapter');
 describe('model.events', function() {
     before(function() {
         Models.define('task');
-        LocalStorageAdapter.register('task', [{
+        LocalStorageAdapter.register('task');
+        var task1 = new Models.Task({
             uri: '/tasks/read-manual',
             active: false
-        }, {
+        });
+        var task2 = new Models.Task({
             uri: '/tasks/accept',
             active: false
-        }]);
+        });
 
         Models.define('tour', {
             tasks: {
@@ -20,15 +22,16 @@ describe('model.events', function() {
                 array: true
             }
         });
-        LocalStorageAdapter.register('tour', [{
+        LocalStorageAdapter.register('tour');
+        var tour = new Models.Tour({
             uri: '/tours/welcome',
-            tasks: [
-                '/tasks/read-manual',
-                '/tasks/accept'
-            ],
+        //    tasks: [ task1, task2 ],
             done: false,
             activeTask: 0
-        }]);
+        });
+        tour.tasks.push(task1);
+        tour.tasks.push(task2);
+
     });
     after(function() {
         Models.Tour.remove('/tours/welcome');
@@ -43,10 +46,12 @@ describe('model.events', function() {
         var spy = sinon.spy();
         tour.on('doneChange', spy);
         tour.done = false;
-        tour.listenTo(tour.tasks[0], 'activeChange', spy);
+        tour.tasks[0].on('activeChange', function() {
+            spy();
+        });
         tour.tasks[0].active = true;
 
-        expect(spy.calledTwice, 'to be true');
+        expect(spy.callCount, 'to equal', 2);
     });
     it('gets events on both instances', function() {
         var tour1 = Models.Tour.get('/tours/welcome');
@@ -58,5 +63,4 @@ describe('model.events', function() {
 
         expect(spy.called, 'to be true');
     });
-
 });

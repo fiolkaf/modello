@@ -12,13 +12,16 @@ function extendFunctions(model, extend) {
     });
 }
 
-function extendProperties(data, extend) {
-    Object.keys(extend).filter(function (key) {
-        return typeof extend[key] !== 'function';
+function extendProperties(data, definition) {
+    Object.keys(definition).filter(function (key) {
+        return typeof definition[key] !== 'function';
     }).filter(function(key) {
         return typeof data[key] === 'undefined';
     }).forEach(function(key) {
-        data[key] = extend[key] ? extend[key].default : null;
+        if (!definition[key]) {
+            data[key] = null;
+        }
+        data[key] = definition[key].default || definition[key].array ? [] : null;
     });
 }
 
@@ -34,12 +37,6 @@ function Model(data, extend) {
 
     extendProperties(data, extend);
     var observable = new ObservableObject(data);
-    var unsubscribe = observable.on('change', function(evt) {
-        var target = evt.target || observable;
-        var ev = Object.assign({}, evt, {key: evt.key.split('.').pop() });
-        target._trigger(ev.key + 'Change', ev);
-    });
-    observable.addDisposer(unsubscribe);
 
     observable.listenTo = function(target, topic, callback) {
         if (typeof target === 'string') {
