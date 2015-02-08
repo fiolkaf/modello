@@ -20,6 +20,7 @@ function extendProperties(data, definition) {
     }).forEach(function(key) {
         if (!definition[key]) {
             data[key] = null;
+            return;
         }
         data[key] = definition[key].default || definition[key].array ? [] : null;
     });

@@ -14,6 +14,7 @@ function getTypeProperties(type) {
 function keyFromUri(type, uri) {
     return '/' + type + 's/' + uri;
 }
+
 var LocalStorageAdapter = {
 
     get: function(type, uri) {

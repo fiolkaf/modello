@@ -29,7 +29,6 @@ describe('models', function() {
             });
             var properties = Models.Person.Type.getNonPersistentProperties();
             expect(properties.length, 'to equal', 1);
-            expect(properties.indexOf('active') === 0, 'to be true');
 
             Models.Person = null;
         });

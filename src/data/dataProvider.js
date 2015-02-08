@@ -17,15 +17,31 @@ var DataProvider = function(dataAdapter) {
         _cache[model.uri] = model;
     }
 
-    function createModel(type, data) {
+    function getDataForModel(type, model) {
         var Constructor = Models.getByType(type);
+        var properties = Constructor.Type.getNonPersistentProperties();
+        var result = Object.assign({}, model);
+        properties.forEach(function(property) {
+            delete result[property.name];
+        });
+        return result;
+    }
 
+    function addNonPresistentProperties(type, data) {
+        var Constructor = Models.getByType(type);
+        var properties = Constructor.Type.getNonPersistentProperties();
+        properties.forEach(function(property) {
+            data[property.name] = property['default'] || null;
+        });
+    }
+
+    function registerSubTypes(type, data) {
+        var Constructor = Models.getByType(type);
         var properties = Constructor.Type.getTypedProperties();
         properties.forEach(function(property) {
             if (data[property.name] === null) {
                 throw 'Please define ' + property.name + ' property for ' + type;
             }
-
             if (property.array) {
                 data[property.name] = data[property.name].map(function(item) {
                     var model = createModel(property.type, item);
@@ -37,9 +53,16 @@ var DataProvider = function(dataAdapter) {
                 registerModel(property.type, data[property.name]);
             }
         });
+    }
+
+    function createModel(type, data) {
+        var Constructor = Models.getByType(type);
+        addNonPresistentProperties(type, data);
+        registerSubTypes(type, data);
 
         var model = new Constructor(data, false);
         registerModel(type, model);
+
         return model;
     }
 
@@ -66,8 +89,8 @@ var DataProvider = function(dataAdapter) {
         if (!_cache[model.uri]) {
             registerModel(type, model);
         }
-
-        dataAdapter.save(type, model);
+        var data = getDataForModel(type, model);
+        dataAdapter.save(type, data);
     };
 
     this.remove = function(type, uri) {

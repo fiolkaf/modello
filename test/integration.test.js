@@ -120,6 +120,16 @@ describe('model-integration', function() {
             expect(result.tasks[0].name, 'to equal', task1.name);
             expect(result.tasks[1].name, 'to equal', task2.name);
         });
+        it('does not save non persistent properties', function() {
+            Models.define('user', {
+                name: null,
+                active: { store: false}
+            });
+            var user = new Models.User({});
+            expect(user.hasOwnProperty('name'), 'to be true');
+            expect(user.hasOwnProperty('active'), 'to be true');
+            Models.User = null;
+        });
     });
     describe('events', function() {
         before(function() {
@@ -369,6 +379,67 @@ describe('model-integration', function() {
             userInstance1.listenTo('nameChange', spy );
             userInstance2.name = 'new name';
             expect(spy.calledOnce, 'to be true');
+        });
+    });
+    describe('save', function() {
+        it('does not save non persistent properties', function() {
+            Models.define('user', {
+                name: null,
+                active: { store: false}
+            });
+            LocalStorageAdapter.register('user');
+
+            var user = new Models.User({
+                name: 'My name',
+                active: true
+            });
+
+            var data = LocalStorageAdapter.get('user', user.uri);
+            expect(data.active, 'to be undefined');
+
+            user = Models.User.get(user.uri);
+            expect(user.active, 'to be true');
+
+            Models.User.remove(user.uri);
+            Models.User = null;
+        });
+        it('assigns non persistent properties', function() {
+            Models.define('user', {
+                name: null,
+                active: { store: false}
+            });
+            LocalStorageAdapter.register('user');
+
+            var user = new Models.User({
+                name: 'My name',
+                active: true
+            });
+
+            Models.User.resetCache();
+            user = Models.User.get(user.uri);
+            expect(user.hasOwnProperty('active'), 'to be true');
+
+            Models.User.remove(user.uri);
+            Models.User = null;
+        });
+        it('assigns default value to persistent properties', function() {
+            Models.define('user', {
+                name: null,
+                active: { store: false, default: 'yes'}
+            });
+            LocalStorageAdapter.register('user');
+
+            var user = new Models.User({
+                name: 'My name',
+                active: true
+            });
+
+            Models.User.resetCache();
+            user = Models.User.get(user.uri);
+            expect(user.active, 'to equal', 'yes');
+
+            Models.User.remove(user.uri);
+            Models.User = null;
         });
     });
 });

@@ -3,7 +3,7 @@ var TypeDefinition = function(type, definition) {
         getTypedProperties: function() {
             return Object.keys(definition)
                 .map(function(name) {
-                    return Object.assign(definition[name], { 'name': name });
+                    return Object.assign(definition[name] || {}, { 'name': name });
                 })
                 .filter(function(propertyInfo) {
                     return propertyInfo.hasOwnProperty('type');
@@ -12,8 +12,10 @@ var TypeDefinition = function(type, definition) {
         getNonPersistentProperties: function() {
             return Object.keys(definition)
                 .filter(function(key) {
-                    var propertyInfo = definition[key];
+                    var propertyInfo = definition[key] || {};
                     return propertyInfo.hasOwnProperty('store') && propertyInfo.store === false;
+                }).map(function(name) {
+                    return Object.assign(definition[name] || {}, { 'name': name });
                 });
         }
     };
