@@ -2,8 +2,6 @@ var Models = require('../model/models');
 var DataTraverse = require('./dataTraverse');
 var DataAdapters = require('./dataAdapters');
 
-var Prefix = '/g2a';
-
 function getTypeProperties(type) {
     var model = Models.getByType(type);
     if (!model) {
@@ -13,10 +11,13 @@ function getTypeProperties(type) {
     return model.Type.getTypedProperties();
 }
 
+function keyFromUri(type, uri) {
+    return '/' + type + 's/' + uri;
+}
 var LocalStorageAdapter = {
 
     get: function(type, uri) {
-        var json = localStorage.getItem(Prefix + uri);
+        var json = localStorage.getItem(keyFromUri(type, uri));
         var data = JSON.parse(json);
 
         if (data === null) {
@@ -26,20 +27,34 @@ var LocalStorageAdapter = {
         return DataTraverse.resolveNestedObjects(properties, data, LocalStorageAdapter.get);
     },
 
-    remove: function(uri) {
-        localStorage.removeItem(Prefix + uri);
+    remove: function(type, uri) {
+        localStorage.removeItem(keyFromUri(type, uri));
     },
 
     getAll: function(type, filter) {
-        localStorage.map(function(storageItem) {
-            throw 'Not implemented';
+        filter = filter || {};
+
+        return Object.keys(localStorage).filter(function(key) {
+            return key.indexOf('/' + type + 's/') === 0;
+        }).map(function(key) {
+            return JSON.parse(localStorage.getItem(key));
+        }).filter(function(store) {
+
+            var keys = Object.keys(filter);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                if (store[key] !== filter[key]) {
+                    return false;
+                }
+            }
+            return true;
         });
     },
 
     save: function(type, data) {
         var properties = getTypeProperties(type);
         data = DataTraverse.flattenNestedObjects(properties, data);
-        localStorage.setItem(Prefix + data.uri, JSON.stringify(data));
+        localStorage.setItem(keyFromUri(type, data.uri), JSON.stringify(data));
     }
 };
 

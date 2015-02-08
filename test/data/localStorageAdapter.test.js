@@ -12,7 +12,7 @@ describe('localStorageAdapter', function() {
         };
         LocalStorageAdapter.save('test', data);
         var result = LocalStorageAdapter.get('test', '/test/1');
-        LocalStorageAdapter.remove('/test/1');
+        LocalStorageAdapter.remove('test', '/test/1');
 
         expect(result, 'to equal', data);
     });
@@ -52,9 +52,9 @@ describe('localStorageAdapter', function() {
         result = LocalStorageAdapter.get('level2', '/test/level2');
         expect(result, 'to equal', modelLevel2);
 
-        LocalStorageAdapter.remove('/test/level0');
-        LocalStorageAdapter.remove('/test/level1');
-        LocalStorageAdapter.remove('/test/level2');
+        LocalStorageAdapter.remove('level0', '/test/level0');
+        LocalStorageAdapter.remove('level1', '/test/level1');
+        LocalStorageAdapter.remove('level2', '/test/level2');
         Models.Level0 = null;
         Models.Level1 = null;
         Models.Level2 = null;
@@ -106,23 +106,63 @@ describe('localStorageAdapter', function() {
 
         LocalStorageAdapter.save('level1', modelLevel10);
         LocalStorageAdapter.save('level1', modelLevel11);
-        LocalStorageAdapter.save('level1', modelLevel20);
-        LocalStorageAdapter.save('level1', modelLevel21);
-        LocalStorageAdapter.save('level1', modelLevel22);
-        LocalStorageAdapter.save('level1', modelLevel23);
+        LocalStorageAdapter.save('level2', modelLevel20);
+        LocalStorageAdapter.save('level2', modelLevel21);
+        LocalStorageAdapter.save('level2', modelLevel22);
+        LocalStorageAdapter.save('level2', modelLevel23);
         LocalStorageAdapter.save('level0', model);
 
         var result = LocalStorageAdapter.get('level0', 'model');
         expect(result, 'to equal', model);
-        LocalStorageAdapter.remove('model');
-        LocalStorageAdapter.remove('modelLevel10');
-        LocalStorageAdapter.remove('modelLevel11');
-        LocalStorageAdapter.remove('modelLevel20');
-        LocalStorageAdapter.remove('modelLevel21');
-        LocalStorageAdapter.remove('modelLevel22');
-        LocalStorageAdapter.remove('modelLevel23');
+        LocalStorageAdapter.remove('level0', 'model');
+        LocalStorageAdapter.remove('level1', 'modelLevel10');
+        LocalStorageAdapter.remove('level1', 'modelLevel11');
+        LocalStorageAdapter.remove('level2', 'modelLevel20');
+        LocalStorageAdapter.remove('level2', 'modelLevel21');
+        LocalStorageAdapter.remove('level2', 'modelLevel22');
+        LocalStorageAdapter.remove('level2', 'modelLevel23');
         Models.Level0 = null;
         Models.Level1 = null;
         Models.Level2 = null;
+    });
+    it('can save and getAll results', function() {
+        Models.define('user');
+        var users = [
+            {
+                uri: '1',
+                name: 'Filip',
+                surname: 'Smith'
+            },
+            {
+                uri: '2',
+                name: 'Filip',
+                surname: 'Brown'
+            },
+            {
+                uri: '3',
+                name: 'Adam',
+                surname: 'Brown'
+            },
+            {
+                uri: '4',
+                name: 'Adam',
+                surname: 'Jonson'
+            }
+        ];
+
+        users.forEach(function(user) {
+            LocalStorageAdapter.save('user', user);
+        });
+        
+        var result = LocalStorageAdapter.getAll('user', { name: 'Adam' });
+        expect(result.length, 'to equal', 2);
+
+        result = LocalStorageAdapter.getAll('user', { name: 'Adam', surname: 'Brown' });
+        expect(result.length, 'to equal', 1);
+
+        users.forEach(function(user) {
+            LocalStorageAdapter.remove('user', user.uri);
+        });
+        Models.User = null;
     });
 });

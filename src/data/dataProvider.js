@@ -70,9 +70,9 @@ var DataProvider = function(dataAdapter) {
         dataAdapter.save(type, model);
     };
 
-    this.remove = function(uri) {
+    this.remove = function(type, uri) {
         delete _cache.uri;
-        dataAdapter.remove(uri);
+        dataAdapter.remove(type, uri);
     };
 
     this.resetCache = function() {

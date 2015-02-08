@@ -75,7 +75,7 @@ describe('model-integration', function() {
 
             var result = LocalStorageAdapter.get('task', task.uri);
             expect(task.name, 'to equal', result.name);
-            LocalStorageAdapter.remove(task.uri);
+            LocalStorageAdapter.remove('task', task.uri);
             Models.Task = null;
         });
         it('can create new nested models', function() {
@@ -153,20 +153,20 @@ describe('model-integration', function() {
                         user: new Models.User({ name: 'Filip'})
                     })
                 ],
-                user: new Models.User({name: 'Filip'})
+                user: new Models.User({name: 'Filip 4'})
             });
         });
         after(function() {
             Models.Tour.remove(_tour.uri);
             Models.Task.remove(_tour.tasks[0].uri);
             Models.Task.remove(_tour.tasks[1].uri);
-            Models.Task.remove(_tour.user.uri);
-            Models.Task.remove(_tour.tasks[0].user.uri);
-            Models.Task.remove(_tour.tasks[1].user.uri);
+            Models.User.remove(_tour.user.uri);
+            Models.User.remove(_tour.tasks[0].user.uri);
+            Models.User.remove(_tour.tasks[1].user.uri);
 
             Models.Tour = null;
             Models.Task = null;
-
+            Models.User = null;
         });
         it('can retrieve nested model', function() {
             var result = LocalStorageAdapter.get('tour', _tour.uri);
@@ -212,7 +212,7 @@ describe('model-integration', function() {
             tour = Models.Tour.get(_tour.uri);
             expect(tour.user.name, 'to equal', 'new name');
         });
-        it('gets notifications from child objects', function() {
+        it('gets notification from child objects', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
@@ -223,7 +223,7 @@ describe('model-integration', function() {
             user.name = 'new name';
             expect(spy.called, 'to be true');
         });
-        it('gets notifications from parent objects', function() {
+        it('gets notification from parent objects', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
@@ -235,7 +235,7 @@ describe('model-integration', function() {
             tour.user.name = 'new name';
             expect(spy.called, 'to be true');
         });
-        it('gets notifications from hierarchy objects', function() {
+        it('gets notification from hierarchy objects', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
@@ -246,6 +246,73 @@ describe('model-integration', function() {
             expect(spy.called, 'to be true');
             Models.User.resetCache();
             expect(tour.tasks[0].user.name, 'to equal', 'new name');
+        });
+
+    });
+    describe('getAll', function() {
+        var _models;
+        before(function() {
+            Models.define('user');
+            LocalStorageAdapter.register('user');
+            _models = [
+                new Models.User({ name: 'Filip', surname: 'Brown'}),
+                new Models.User({ name: 'Adam', surname: 'Yellow'}),
+                new Models.User({ name: 'Filip', surname: 'Blue'}),
+                new Models.User({ name: 'Adam', surname: 'Pink'})
+            ];
+        });
+        after(function() {
+            _models.forEach(function(model) {
+                Models.User.remove(model.uri);
+            });
+            Models.User = null;
+        });
+        it('can get list of objects', function() {
+            var users = Models.User.getAll({ name: 'Filip' });
+            expect(users.length, 'to equal', 2);
+
+            users = Models.User.getAll({ name: 'Filip', surname: 'Brown' });
+            expect(users.length, 'to equal', 1);
+        });
+        it('can get list of objects without cache', function() {
+            Models.User.resetCache();
+            var users = Models.User.getAll({ name: 'Filip' });
+            expect(users.length, 'to equal', 2);
+
+            users = Models.User.getAll({ name: 'Filip', surname: 'Brown' });
+            expect(users.length, 'to equal', 1);
+        });
+        it('returns the same instances of objects', function() {
+            Models.User.resetCache();
+            var userInstance1 = Models.User.getAll({ uri: _models[0].uri })[0];
+            var userInstance2 = Models.User.getAll({ uri: _models[0].uri })[0];
+            expect(userInstance1, 'to be', userInstance2);
+        });
+        it('can subscribe to object events', function() {
+            Models.User.resetCache();
+            var user = Models.User.getAll({ uri: _models[0].uri })[0];
+            var spy = sinon.spy();
+            user.listenTo('nameChange', spy );
+            user.name = 'new name';
+            expect(spy.calledOnce, 'to be true');
+        });
+        it('shares events between objects', function() {
+            Models.User.resetCache();
+            var userInstance1 = Models.User.getAll({ uri: _models[0].uri })[0];
+            var userInstance2 = Models.User.getAll({ uri: _models[0].uri })[0];
+            var spy = sinon.spy();
+            userInstance1.listenTo('nameChange', spy );
+            userInstance2.name = 'new name';
+            expect(spy.calledOnce, 'to be true');
+        });
+        it('shares events between objects (with get method)', function() {
+            Models.User.resetCache();
+            var userInstance1 = Models.User.get(_models[0].uri);
+            var userInstance2 = Models.User.getAll({ uri: _models[0].uri })[0];
+            var spy = sinon.spy();
+            userInstance1.listenTo('nameChange', spy );
+            userInstance2.name = 'new name';
+            expect(spy.calledOnce, 'to be true');
         });
     });
 });

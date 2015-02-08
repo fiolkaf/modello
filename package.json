@@ -29,6 +29,6 @@
     "unexpected": "^5.8.1"
   },
   "dependencies": {
-    "osync": "^0.0.11"
+    "osync": "^0.0.12"
   }
 }

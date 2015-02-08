@@ -8,11 +8,11 @@ describe('model.events', function() {
         Models.define('task');
         LocalStorageAdapter.register('task');
         var task1 = new Models.Task({
-            uri: '/tasks/read-manual',
+            uri: '/task/read-manual',
             active: false
         });
         var task2 = new Models.Task({
-            uri: '/tasks/accept',
+            uri: '/task/accept',
             active: false
         });
 
@@ -24,35 +24,33 @@ describe('model.events', function() {
         });
         LocalStorageAdapter.register('tour');
         var tour = new Models.Tour({
-            uri: '/tours/welcome',
+            uri: '/tour/welcome',
             tasks: [ task1, task2 ],
             done: false,
             activeTask: 0
         });
     });
     after(function() {
-        Models.Tour.remove('/tours/welcome');
+        Models.Tour.remove('/tour/welcome');
         Models.Tour = null;
 
-        Models.Task.remove('/tasks/read-manual');
-        Models.Task.remove('/tasks/accept');
+        Models.Task.remove('/task/read-manual');
+        Models.Task.remove('/task/accept');
         Models.Task = null;
     });
     it('gets events on model modification', function() {
-        var tour = Models.Tour.get('/tours/welcome');
+        var tour = Models.Tour.get('/tour/welcome');
         var spy = sinon.spy();
         tour.on('doneChange', spy);
         tour.done = false;
-        tour.tasks[0].on('activeChange', function() {
-            spy();
-        });
+        tour.tasks[0].on('activeChange', spy);
         tour.tasks[0].active = true;
 
         expect(spy.callCount, 'to equal', 2);
     });
     it('gets events on both instances', function() {
-        var tour1 = Models.Tour.get('/tours/welcome');
-        var tour2 = Models.Tour.get('/tours/welcome');
+        var tour1 = Models.Tour.get('/tour/welcome');
+        var tour2 = Models.Tour.get('/tour/welcome');
 
         var spy = sinon.spy();
         tour2.on('doneChange', spy);

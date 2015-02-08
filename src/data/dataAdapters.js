@@ -2,7 +2,7 @@ var Models = require('../model/models');
 var DataProvider = require('./dataProvider');
 
 var DataAdapters = {
-    register: function(type, dataAdapter, defaultArray) {
+    register: function(type, dataAdapter) {
         var constructorName = type.substr(0, 1).toUpperCase() + type.substr(1);
         var modelConstructor = Models[constructorName];
 
@@ -31,7 +31,9 @@ var DataAdapters = {
         modelConstructor.resetCache = function() {
             return dataProvider.resetCache();
         };
-        modelConstructor.remove = dataProvider.remove;
+        modelConstructor.remove = function(uri) {
+            return dataProvider.remove(type, uri);
+        };
     }
 };
 
