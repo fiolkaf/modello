@@ -8,6 +8,13 @@ var TypeDefinition = function(type, definition) {
                 .filter(function(propertyInfo) {
                     return propertyInfo.hasOwnProperty('type');
                 });
+        },
+        getNonPersistentProperties: function() {
+            return Object.keys(definition)
+                .filter(function(key) {
+                    var propertyInfo = definition[key];
+                    return propertyInfo.hasOwnProperty('store') && propertyInfo.store === false;
+                });
         }
     };
 };

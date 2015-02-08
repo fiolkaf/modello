@@ -8,17 +8,38 @@ var DataProvider = function(dataAdapter) {
 
     function registerModel(type, model) {
         var unsubscribe = model.on('change', function(evt) {
-            var data = evt.target || model;
-            _self.save(type, data);
+            if (evt.target && evt.target !== model) {
+                return;
+            }
+            _self.save(type, model);
         });
         _self.addDisposer(unsubscribe);
         _cache[model.uri] = model;
     }
 
     function createModel(type, data) {
-        var create = new Models.getByType(type);
-        var model = create(data, false);
-        registerModel(model);
+        var Constructor = Models.getByType(type);
+
+        var properties = Constructor.Type.getTypedProperties();
+        properties.forEach(function(property) {
+            if (data[property.name] === null) {
+                throw 'Please define ' + property.name + ' property for ' + type;
+            }
+
+            if (property.array) {
+                data[property.name] = data[property.name].map(function(item) {
+                    var model = createModel(property.type, item);
+                    registerModel(property.type, model);
+                    return model;
+                });
+            } else {
+                data[property.name] = createModel(property.type, data[property.name]);
+                registerModel(property.type, data[property.name]);
+            }
+        });
+
+        var model = new Constructor(data, false);
+        registerModel(type, model);
         return model;
     }
 
@@ -52,6 +73,10 @@ var DataProvider = function(dataAdapter) {
     this.remove = function(uri) {
         delete _cache.uri;
         dataAdapter.remove(uri);
+    };
+
+    this.resetCache = function() {
+        _cache = {};
     };
 };
 

@@ -25,13 +25,10 @@ describe('model.events', function() {
         LocalStorageAdapter.register('tour');
         var tour = new Models.Tour({
             uri: '/tours/welcome',
-        //    tasks: [ task1, task2 ],
+            tasks: [ task1, task2 ],
             done: false,
             activeTask: 0
         });
-        tour.tasks.push(task1);
-        tour.tasks.push(task2);
-
     });
     after(function() {
         Models.Tour.remove('/tours/welcome');

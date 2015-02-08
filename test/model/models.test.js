@@ -15,10 +15,22 @@ describe('models', function() {
             Models.define('person', {
                 firstName: {},
                 name: {},
+                active: {}
+            });
+            Models.Person = null;
+        });
+        it('can define model with non persistent properties', function() {
+            Models.define('person', {
+                firstName: {},
+                name: {},
                 active: {
                     store: false
                 }
             });
+            var properties = Models.Person.Type.getNonPersistentProperties();
+            expect(properties.length, 'to equal', 1);
+            expect(properties.indexOf('active') === 0, 'to be true');
+
             Models.Person = null;
         });
         it('can create a new defined model', function() {
@@ -41,7 +53,7 @@ describe('models', function() {
             });
             Models.Person = null;
         });
-        it('contains extended model methods', function() {
+        it('can extended model methods', function() {
             Models.define('person', {
                 name: null,
                 getName: function() {
@@ -57,7 +69,7 @@ describe('models', function() {
             expect(person.getName(), 'to equal', 'Filip');
             Models.Person = null;
         });
-        it('can listen to child changes', function() {
+        it('runs init method and listens to child changes', function() {
             var spy = sinon.spy();
             Models.define('tour', {
                 taskChanged: null,

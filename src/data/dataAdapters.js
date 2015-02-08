@@ -28,6 +28,9 @@ var DataAdapters = {
         modelConstructor.create = function(data) {
             return dataProvider.save(type, data);
         };
+        modelConstructor.resetCache = function() {
+            return dataProvider.resetCache();
+        };
         modelConstructor.remove = dataProvider.remove;
     }
 };

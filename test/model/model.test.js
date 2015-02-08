@@ -13,11 +13,4 @@ describe('model', function() {
         });
         expect(model.property, 'to be true');
     });
-    it('can extend model with methods', function() {
-        var model = new Model({
-            uri: 'uri',
-            property: true
-        });
-        expect(model.property, 'to be true');
-    });
 });

@@ -40,9 +40,9 @@ function Model(data, extend) {
 
     observable.listenTo = function(target, topic, callback) {
         if (typeof target === 'string') {
-            target = this;
-            topic = target;
             callback = topic;
+            topic = target;
+            target = this;
         }
         var subscribe = target.on(topic, callback);
         observable.addDisposer(subscribe);
