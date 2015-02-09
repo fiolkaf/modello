@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/fiolkaf/osync.svg?branch=master)](https://travis-ci.org/fiolkaf/modello)
+[![Build Status](https://travis-ci.org/fiolkaf/modello.svg?branch=master)](https://travis-ci.org/fiolkaf/modello)
 # modello
 Javascript modeling framework
 
