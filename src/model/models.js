@@ -1,6 +1,5 @@
 var Model = require('./model');
 var TypeDefinition = require('./typeDefinition');
-var DataAdapters = require('../data/dataAdapters');
 
 function guid() {
     function _p8(s) {
