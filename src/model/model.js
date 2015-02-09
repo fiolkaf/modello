@@ -22,7 +22,11 @@ function extendProperties(data, definition) {
             data[key] = null;
             return;
         }
-        data[key] = definition[key].default || definition[key].array ? [] : null;
+        if (definition[key].array) {
+            data[key] = [];
+        } else {
+            data[key] = definition[key].default;
+        }
     });
 }
 

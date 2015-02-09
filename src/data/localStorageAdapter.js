@@ -59,8 +59,8 @@ var LocalStorageAdapter = {
     }
 };
 
-LocalStorageAdapter.register = function(type, defaultData) {
-    return DataAdapters.register(type, LocalStorageAdapter, defaultData);
+LocalStorageAdapter.register = function(type) {
+    return DataAdapters.register(type, LocalStorageAdapter);
 };
 
 module.exports = LocalStorageAdapter;

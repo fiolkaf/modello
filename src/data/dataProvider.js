@@ -94,7 +94,7 @@ var DataProvider = function(dataAdapter) {
     };
 
     this.remove = function(type, uri) {
-        delete _cache.uri;
+        _cache[uri] = null;
         dataAdapter.remove(type, uri);
     };
 

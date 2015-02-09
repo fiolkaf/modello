@@ -16,6 +16,7 @@ function getModelName(type) {
 
 function createConstructor(type, extend) {
     return function(data, save) {
+        data = data || {};
         if (!data.uri) {
             data.uri = '/' + type + '/' + guid();
         }
