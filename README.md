@@ -52,6 +52,32 @@ var garden = new Models.Garden({ carrots: 7 });
 expect(garden.carrots, 'to equal', 7);
 ```
 
+##### Model functions
+Extend your model with helper functions:
+```javascript
+Models.define('garden', {
+    pumpkins: { default: 1 },
+    carrots: { default: 3 },
+    getVeggiesCount: function() {
+        return this.pumpkins + this.carrots;
+    }
+});
+garden = new Models.Garden();
+expect(garden.getVeggiesCount(), 'to equal', 4);
+```
+
+Init function will be executed when model is created:
+```javascript
+Models.define('garden', {
+    pumpkins: {},
+    init: function() {
+        this.pumpkins = 1;
+    }
+});
+garden = new Models.Garden();
+expect(garden.pumpkins, 'to equal', 1);
+```
+
 ##### Embedded models
 Composing models is easy:
 ```javascript
