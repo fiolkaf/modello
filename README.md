@@ -19,19 +19,23 @@ Models.define('garden');
 var garden = new Models.Garden();
 ```
 ##### Model properties
-You can define your model with properties:
+You can define your model properties:
 
 ```javascript
 // Define a new 'garden' model
 Models.define('garden', {
-  pumpkins: {},
+    // garden.pumpkins property will be defined for all instances
+    pumpkins: {},
+    // garden.opened property will get default value
+    opened: { default: true },
+    // Array definition, defaults to []
+    owners: { array: true }
 });
-
 // Create an instance of a garden
-var garden = new Models.Garden({
-  pumpkins: 3
-});
+var garden = new Models.Garden({ pumpkins: 3 });
 expect(garden.pumpkins, 'to equal', 3);
+expect(garden.opened, 'to be true');
+expect(garden.owners, 'to equal', []);
 ```
 
 Your model will get all defined properties:
@@ -40,23 +44,12 @@ var garden = new Models.Garden();
 
 expect(garden.hasOwnProperty('pumpkins'), 'to be true');
 ```
-##### Default values for properties
-You can specify default values for properties:
+
+And can be extended with not defined properties:
 ```javascript
-Models.define('garden', {
-    pumpkins: { default: 0 },
-});
-garden = new Models.Garden();
-expect(garden.pumpkins, 'to equal', 0);
-```
-##### Array properties
-Or define arays:
-```javascript
-Models.define('garden', {
-    owners: { array: true },
-});
-var garden = new Models.Garden();
-expect(garden.owners, 'to equal', []);
+var garden = new Models.Garden({ carrots: 7 });
+
+expect(garden.carrots, 'to equal', 7);
 ```
 
 ##### Embedded models
@@ -70,7 +63,7 @@ Models.define('strawberry', { color: { default: 'red' }});
 
 // Define garden model
 Models.define('garden', {
-    pumpkin: { type: 'pumpkin' }, // embedded mo
+    pumpkin: { type: 'pumpkin' }, // embedded model
     strawberries: { type: 'strawberry', array: true }
 });
 
@@ -80,5 +73,7 @@ var garden = new Models.Garden({
 });
 expect(garden.pumpkin.size, 'to equal', 1);
 expect(garden.strawberries[0].color, 'to equal', 'red');
-
 ```
+
+## Model events
+
