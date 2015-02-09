@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start"
+    "test": "grunt"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,9 @@
   "homepage": "https://github.com/fiolkaf/modello",
   "devDependencies": {
     "es6-shim": "^0.24.0",
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.0",
+    "grunt-karma": "^0.10.1",
     "karma-chrome-launcher": "^0.1.7",
     "karma-commonjs": "0.0.13",
     "karma-es5-shim": "0.0.4",
