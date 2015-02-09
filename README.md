@@ -41,14 +41,12 @@ expect(garden.owners, 'to equal', []);
 Your model will get all defined properties:
 ```javascript
 var garden = new Models.Garden();
-
 expect(garden.hasOwnProperty('pumpkins'), 'to be true');
 ```
 
 And can be extended with not defined properties:
 ```javascript
 var garden = new Models.Garden({ carrots: 7 });
-
 expect(garden.carrots, 'to equal', 7);
 ```
 
@@ -101,5 +99,17 @@ expect(garden.pumpkin.size, 'to equal', 1);
 expect(garden.strawberries[0].color, 'to equal', 'red');
 ```
 
-## Model events
+#### Model events
+```javascript
+garden = new Models.Garden();
+// Attach listener to 'pumpkins' property change 
+garden.listenTo('pumpkinsChange', callback);
+// Attach a generic listener to any change in the model 
+garden.listenTo('change', callback);
+garden.pumpkins++;
+```
 
+All subscriptions will be released when disposing a model:
+```javascript
+garden.dispose();
+```
