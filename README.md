@@ -113,3 +113,41 @@ All subscriptions will be released when disposing a model:
 ```javascript
 garden.dispose();
 ```
+
+## Model data adapter
+
+```javascript
+Models.define('garden', { pumpkins: { default: 0 } });
+
+// Specify that we store garden models in localstorage
+LocalStorageAdapter.register('garden');
+
+// New instance is created and saved, it gets assigned uri property
+var garden = new Models.Garden();
+
+// You can specify uri property by yourself
+garden = new Models.Garden({
+    uri: '/garden/myGarden'
+});
+
+// Get you model using get method on the model
+Models.Garden.get('/garden/myGarden');
+
+// Query models using getAll method
+result = Models.Garden.getAll( { pumpkins: 0 });
+
+// Model changes will be saved on each modification
+garden.pumpkins++;
+            
+// remove your models with remove method
+result = Models.Garden.remove(garden.uri);
+```
+
+##### Non persistent properties
+Use store modifier to exlude property from beeing stored:
+
+```javascript
+Models.define('garden', { 
+    pumpkins: { store: false } 
+});
+```
