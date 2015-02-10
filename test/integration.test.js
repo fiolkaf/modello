@@ -12,15 +12,17 @@ describe('model-integration', function() {
                 }
             });
             LocalStorageAdapter.register('tour');
-            new Models.Tour({
+            var tour = new Models.Tour({
                 uri: '/tours/welcome',
                 default: true
             });
-            var tour = Models.Tour.get('/tours/welcome');
+            var result = Models.Tour.get('/tours/welcome');
 
-            expect(tour.uri, 'to equal', '/tours/welcome');
-            expect(tour.default, 'to equal', true);
+            expect(result.uri, 'to equal', '/tours/welcome');
+            expect(result.default, 'to equal', true);
 
+            tour.dispose();
+            result.dispose();
             Models.Tour.remove('/tours/welcome');
             Models.Tour = null;
         });
@@ -59,6 +61,8 @@ describe('model-integration', function() {
             expect(tourResult.tasks[0].uri, 'to equal', '/tasks/read-manual');
             expect(tourResult.tasks[1].uri, 'to equal', '/tasks/accept');
 
+            tour.dispose();
+            tourResult.dispose();
             Models.Tour.remove('/tours/welcome');
             Models.Tour = null;
 
@@ -113,6 +117,7 @@ describe('model-integration', function() {
             Models.Task.remove(task1.uri);
             Models.Task.remove(task2.uri);
             Models.Task = null;
+            tour.dispose();
 
             expect(task1.name, 'to equal', task1Result.name);
             expect(task2.name, 'to equal', task2Result.name);
@@ -129,9 +134,11 @@ describe('model-integration', function() {
             expect(user.hasOwnProperty('name'), 'to be true');
             expect(user.hasOwnProperty('active'), 'to be true');
             Models.User = null;
+            user.dispose();
         });
     });
     describe('events', function() {
+        var _tour;
         before(function() {
             Models.define('task');
             LocalStorageAdapter.register('task');
@@ -151,7 +158,7 @@ describe('model-integration', function() {
                 }
             });
             LocalStorageAdapter.register('tour');
-            var tour = new Models.Tour({
+            _tour = new Models.Tour({
                 uri: '/tour/welcome',
                 tasks: [ task1, task2 ],
                 done: false,
@@ -165,6 +172,7 @@ describe('model-integration', function() {
             Models.Task.remove('/task/read-manual');
             Models.Task.remove('/task/accept');
             Models.Task = null;
+            _tour.dispose();
         });
         it('gets events on model modification', function() {
             var tour = Models.Tour.get('/tour/welcome');
@@ -175,6 +183,7 @@ describe('model-integration', function() {
             tour.tasks[0].active = true;
 
             expect(spy.callCount, 'to equal', 2);
+            tour.dispose();
         });
         it('gets events on both instances', function() {
             var tour1 = Models.Tour.get('/tour/welcome');
@@ -185,6 +194,8 @@ describe('model-integration', function() {
             tour1.done = false;
 
             expect(spy.called, 'to be true');
+            tour1.dispose();
+            tour2.dispose();
         });
     });
     describe('retrieve', function() {
@@ -233,6 +244,7 @@ describe('model-integration', function() {
             Models.Tour = null;
             Models.Task = null;
             Models.User = null;
+            _tour.dispose();
         });
         it('can retrieve nested model', function() {
             var result = LocalStorageAdapter.get('tour', _tour.uri);
@@ -265,6 +277,7 @@ describe('model-integration', function() {
             Models.Tour.resetCache();
             tour = Models.Tour.get(_tour.uri);
             expect(tour.tasks[0].name, 'to equal', 'new name');
+            tour.dispose();
         });
         it('gets notification about child changes (model from LocalStorage)', function() {
             Models.Tour.resetCache();
@@ -277,6 +290,7 @@ describe('model-integration', function() {
             Models.Tour.resetCache();
             tour = Models.Tour.get(_tour.uri);
             expect(tour.user.name, 'to equal', 'new name');
+            tour.dispose();
         });
         it('gets notification from child objects', function() {
             Models.Tour.resetCache();
@@ -288,6 +302,8 @@ describe('model-integration', function() {
             var user = Models.Tour.get(_tour.user.uri);
             user.name = 'new name';
             expect(spy.called, 'to be true');
+            tour.dispose();
+            user.dispose();
         });
         it('gets notification from parent objects', function() {
             Models.Tour.resetCache();
@@ -300,6 +316,8 @@ describe('model-integration', function() {
 
             tour.user.name = 'new name';
             expect(spy.called, 'to be true');
+            tour.dispose();
+            user.dispose();
         });
         it('gets notification from hierarchy objects', function() {
             Models.Tour.resetCache();
@@ -311,6 +329,7 @@ describe('model-integration', function() {
             tour.tasks[0].user.name = 'new name';
             expect(spy.called, 'to be true');
             Models.User.resetCache();
+            tour.dispose();
             expect(tour.tasks[0].user.name, 'to equal', 'new name');
         });
 

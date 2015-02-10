@@ -1,4 +1,4 @@
-var ObservableObject = require('osync').ObservableObject;
+var RemoteObject = require('osync').RemoteObject;
 var Models = require('./models');
 
 function extendFunctions(model, extend) {
@@ -41,7 +41,7 @@ function Model(data, extend) {
     extend = extend || {};
 
     extendProperties(data, extend);
-    var observable = new ObservableObject(data);
+    var observable = new RemoteObject(data);
 
     observable.listenTo = function(target, topic, callback) {
         if (typeof target === 'string') {
