@@ -23,7 +23,7 @@ function extendProperties(data, definition) {
             return;
         }
         if (definition[key].array) {
-            data[key] = [];
+            data[key] = definition[key].default || [];
         } else {
             data[key] = definition[key].default;
         }

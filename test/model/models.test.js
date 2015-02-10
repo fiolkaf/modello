@@ -51,6 +51,15 @@ describe('models', function() {
             person.dispose();
             Models.Person = null;
         });
+        it('can define a model with default array properties', function() {
+            Models.define('person', {
+                test: { array: true,  default: [1, 2, 3] }
+            });
+            var person = new Models.Person();
+            expect(person.test, 'to equal', [1, 2, 3]);
+            person.dispose();
+            Models.Person = null;
+        });
     });
     describe('extend', function() {
         it('can extend model with methods', function() {

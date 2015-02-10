@@ -12,7 +12,7 @@ function getTypeProperties(type) {
 }
 
 function keyFromUri(type, uri) {
-    return '/' + type + 's/' + uri;
+    return '/' + type + 's' + uri;
 }
 
 var LocalStorageAdapter = {
@@ -36,7 +36,7 @@ var LocalStorageAdapter = {
         filter = filter || {};
 
         return Object.keys(localStorage).filter(function(key) {
-            return key.indexOf('/' + type + 's/') === 0;
+            return key.indexOf('/' + type + 's') === 0;
         }).map(function(key) {
             return JSON.parse(localStorage.getItem(key));
         }).filter(function(store) {
