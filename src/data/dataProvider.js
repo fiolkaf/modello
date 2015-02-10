@@ -7,10 +7,8 @@ var DataProvider = function(dataAdapter) {
     var _self = this;
 
     function registerModel(type, model) {
-        var unsubscribe = model.on('change', function(evt) {
-            if (model.getLastUriByPath(evt.key).object === model) {
-                _self.save(type, model);
-            }
+        var unsubscribe = model.on('modified', function(evt) {
+            _self.save(type, model);
         });
         _self.addDisposer(unsubscribe);
         _cache[model.uri] = model;
