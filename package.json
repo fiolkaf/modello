@@ -1,6 +1,6 @@
 {
   "name": "modello",
-  "version": "0.0.4",
+  "version": "0.0.8",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,6 @@
     "unexpected": "^5.8.1"
   },
   "dependencies": {
-    "osync": "^0.0.15"
+    "osync": "^0.0.16"
   }
 }

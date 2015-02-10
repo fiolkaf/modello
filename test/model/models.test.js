@@ -39,6 +39,16 @@ describe('models', function() {
                 firstname: 'Filip',
                 surname: 'Fiolka'
             });
+            person.dispose();
+            Models.Person = null;
+        });
+        it('can define a model with default properties', function() {
+            Models.define('person', {
+                test: { default: true }
+            });
+            var person = new Models.Person();
+            expect(person.test, 'to be true');
+            person.dispose();
             Models.Person = null;
         });
     });

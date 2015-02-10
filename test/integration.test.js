@@ -258,11 +258,12 @@ describe('model-integration', function() {
         });
         it('gets notification about child changes', function() {
             var spy = sinon.spy();
-            _tour.listenTo('change', spy);
+            var unsubscribe = _tour.listenTo('change', spy);
 
             _tour.tasks[0].name = 'New name';
             expect(spy.called, 'to be true');
             var result = LocalStorageAdapter.get('tour', _tour.uri);
+            unsubscribe();
             expect(result.tasks[0].name, 'to equal', 'New name');
         });
         it('gets notification about child array changes (model from LocalStorage)', function() {
@@ -270,66 +271,66 @@ describe('model-integration', function() {
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
             expect(tour.tasks.length, 'to equal', 2);
-            tour.listenTo('change', spy);
+            var unsubscribe = tour.listenTo('change', spy);
             tour.tasks[0].name = 'new name';
             expect(spy.called, 'to be true');
 
             Models.Tour.resetCache();
             tour = Models.Tour.get(_tour.uri);
+            unsubscribe();
             expect(tour.tasks[0].name, 'to equal', 'new name');
-            tour.dispose();
         });
         it('gets notification about child changes (model from LocalStorage)', function() {
             Models.Tour.resetCache();
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
-            tour.listenTo('change', spy);
+            var unsubscribe = tour.listenTo('change', spy);
             tour.user.name = 'new name';
             expect(spy.called, 'to be true');
 
             Models.Tour.resetCache();
+
             tour = Models.Tour.get(_tour.uri);
             expect(tour.user.name, 'to equal', 'new name');
-            tour.dispose();
+            unsubscribe();
         });
         it('gets notification from child objects', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
-            tour.listenTo('change', spy);
+            var unsubscribe = tour.listenTo('change', spy);
 
             var user = Models.Tour.get(_tour.user.uri);
             user.name = 'new name';
+            unsubscribe();
             expect(spy.called, 'to be true');
-            tour.dispose();
-            user.dispose();
         });
         it('gets notification from parent objects', function() {
+            _tour.dispose();
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
-
             var user = Models.Tour.get(_tour.user.uri);
-            user.listenTo('change', spy);
+
+            var unsubscribe = user.listenTo('change', spy);
 
             tour.user.name = 'new name';
+            unsubscribe();
             expect(spy.called, 'to be true');
-            tour.dispose();
-            user.dispose();
         });
         it('gets notification from hierarchy objects', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
-            tour.listenTo('change', spy);
+            var unsubscribe = tour.listenTo('change', spy);
 
             tour.tasks[0].user.name = 'new name';
             expect(spy.called, 'to be true');
             Models.User.resetCache();
-            tour.dispose();
+            unsubscribe();
             expect(tour.tasks[0].user.name, 'to equal', 'new name');
         });
 

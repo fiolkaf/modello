@@ -49,8 +49,9 @@ function Model(data, extend) {
             topic = target;
             target = this;
         }
-        var subscribe = target.on(topic, callback);
-        observable.addDisposer(subscribe);
+        var unsubscribe = target.on(topic, callback);
+        observable.addDisposer(unsubscribe);
+        return unsubscribe;
     };
 
     extendFunctions(observable, extend);
