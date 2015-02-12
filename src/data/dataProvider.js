@@ -39,29 +39,34 @@ var DataProvider = function(type, dataAdapter) {
             return response;
         }
 
-        function getResult(data) {
-            _cache[model.uri] = model;
-            model.data(data);
-        }
-
         var model = createModel();
+        _cache[model.uri] = model;
+
         if (response instanceof Promise) {
             model.dataReady = response;
+            model.dataReady.then(function(data) {
+                model.data(data);
+            }, function(err) {
+                console.log(err);
+                throw err;
+            });
         } else {
-            getResult(response);
+            model.data(response);
             model.dataReady = Promise.resolve(response);
         }
-
-        model.dataReady.then(getResult, function(err) {
-            console.log(err);
-            throw err;
-        });
 
         return model;
     };
 
     this.getAll = function(options) {
+        var key = type + JSON.stringify(options);
+        if (_cache[key]) {
+            return _cache[key];
+        }
+
         var result = new ObservableArray([]);
+        _cache[key] = result;
+
         Observer.mixin(result);
         var response = dataAdapter.getAll(type, options);
 
