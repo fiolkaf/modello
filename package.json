@@ -1,6 +1,6 @@
 {
   "name": "modello",
-  "version": "0.0.15",
+  "version": "0.0.17",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "https://github.com/fiolkaf/modello.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/fiolkaf/modello/issues"
   },
@@ -32,6 +32,6 @@
     "unexpected": "^5.8.1"
   },
   "dependencies": {
-    "osync": "0.0.29"
+    "osync": "0.0.30"
   }
 }

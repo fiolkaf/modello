@@ -40,6 +40,7 @@ function ModelFactory(models, type, definition) {
     }
 
     function addData(model, data) {
+        var properties = _typeDefinition.getProperties();
         var typedProperties = _typeDefinition.getTypedProperties();
 
         Object.keys(data)
@@ -49,6 +50,14 @@ function ModelFactory(models, type, definition) {
             .forEach(function(key) {
                 if (!model.hasOwnProperty(key)) {
                     model.defineProperty(key);
+                }
+
+                if (properties[key] && properties[key].array) {
+                    model[key].splice(0, model[key].length);
+                    data[key].forEach(function(item) {
+                        model[key].push(item);
+                    });
+                    return;
                 }
 
                 model[key] = data[key];
