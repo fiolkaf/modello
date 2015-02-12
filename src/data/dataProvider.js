@@ -1,98 +1,108 @@
 var Models = require('../model/models');
+var Observer = require('../model/observer');
+var ObservableArray = require('osync').ObservableArray;
+var ObservableObject = require('osync').ObservableObject;
 var Disposable = require('osync').Mixin.Disposable;
 
-var DataProvider = function(dataAdapter) {
+var DataProvider = function(type, dataAdapter) {
     Disposable.mixin(this);
     var _cache = {};
     var _self = this;
 
-    function registerModel(type, model) {
-        var unsubscribe = model.on('modified', function(evt) {
-            _self.save(type, model);
-        });
-        _self.addDisposer(unsubscribe);
-        _cache[model.uri] = model;
-    }
-
-    function getDataForModel(type, model) {
+    function getDataForModel(model) {
         var Constructor = Models.getByType(type);
         var properties = Constructor.Type.getNonPersistentProperties();
         var result = Object.assign({}, model);
-        properties.forEach(function(property) {
-            delete result[property.name];
+        Object.keys(properties).forEach(function(key) {
+            delete result[key];
         });
         return result;
     }
 
-    function addNonPresistentProperties(type, data) {
+    function createModel() {
         var Constructor = Models.getByType(type);
-        var properties = Constructor.Type.getNonPersistentProperties();
-        properties.forEach(function(property) {
-            data[property.name] = property['default'] || null;
-        });
-    }
-
-    function registerSubTypes(type, data) {
-        var Constructor = Models.getByType(type);
-        var properties = Constructor.Type.getTypedProperties();
-        properties.forEach(function(property) {
-            if (data[property.name] === null) {
-                throw 'Please define ' + property.name + ' property for ' + type;
-            }
-            if (property.array) {
-                data[property.name] = data[property.name].map(function(item) {
-                    var model = createModel(property.type, item);
-                    registerModel(property.type, model);
-                    return model;
-                });
-            } else {
-                data[property.name] = createModel(property.type, data[property.name]);
-                registerModel(property.type, data[property.name]);
-            }
-        });
-    }
-
-    function createModel(type, data) {
-        var Constructor = Models.getByType(type);
-        addNonPresistentProperties(type, data);
-        registerSubTypes(type, data);
-
-        var model = new Constructor(data, false);
-        registerModel(type, model);
+        if (!Constructor) {
+            throw 'Model ' + type + ' is not defined';
+        }
+        var model = new Constructor(null);
 
         return model;
     }
 
-    this.get = function(type, uri) {
+    this.get = function(uri) {
         if (_cache[uri]) {
             return _cache[uri];
         }
 
-        var data = dataAdapter.get(type, uri);
-        if (!data) {
-            return data;
+        var response = dataAdapter.get(type, uri);
+        if (!response) {
+            return response;
         }
-        return createModel(type, data);
-    };
 
-    this.getAll = function(type, filter) {
-        var array = dataAdapter.getAll(type, filter);
-        return array.map(function(data) {
-            return _cache[data.uri] || createModel(type, data);
+        function getResult(data) {
+            _cache[model.uri] = model;
+            model.data(data);
+        }
+
+        var model = createModel();
+        if (response instanceof Promise) {
+            model.dataReady = response;
+        } else {
+            getResult(response);
+            model.dataReady = Promise.resolve(response);
+        }
+
+        model.dataReady.then(getResult, function(err) {
+            console.log(err);
+            throw err;
         });
+
+        return model;
     };
 
-    this.save = function(type, model) {
-        if (!_cache[model.uri]) {
-            registerModel(type, model);
+    this.getAll = function(options) {
+        var result = new ObservableArray([]);
+        Observer.mixin(result);
+        var response = dataAdapter.getAll(type, options);
+
+        function getArray(data) {
+            data.map(function(item) {
+                var model = _cache[item.uri] || createModel().data(item);
+                _cache[model.uri] = model;
+                return model;
+            }).forEach(function(item) {
+                result.push(item);
+            });
         }
-        var data = getDataForModel(type, model);
-        dataAdapter.save(type, data);
+
+        if (response instanceof Promise) {
+            result.dataReady = response;
+        } else {
+            getArray(response);
+            result.dataReady = Promise.resolve(response);
+        }
+
+        result.dataReady.then(getArray, function(err) {
+            console.log(err);
+            throw err;
+        });
+
+        return result;
     };
 
-    this.remove = function(type, uri) {
+    this.save = function(model) {
+        _cache[model.uri] = model;
+        var data = getDataForModel(model);
+        return dataAdapter.save(type, data);
+    };
+
+    this.remove = function(uri) {
         _cache[uri] = null;
         dataAdapter.remove(type, uri);
+    };
+
+    this.addCache = function(uri, model) {
+        _cache[model.uri] = model;
     };
 
     this.resetCache = function() {

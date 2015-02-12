@@ -109,7 +109,6 @@ describe('model-integration', function() {
             });
             task2Result = LocalStorageAdapter.get('task', task2.uri);
             tour.tasks.push(task2);
-
             var result = LocalStorageAdapter.get('tour', tour.uri);
 
             Models.Tour.remove(tour.uri);
@@ -143,11 +142,11 @@ describe('model-integration', function() {
             Models.define('task');
             LocalStorageAdapter.register('task');
             var task1 = new Models.Task({
-                uri: '/task/read-manual',
+                uri: '/newTask/read-manual',
                 active: false
             });
             var task2 = new Models.Task({
-                uri: '/task/accept',
+                uri: '/newTask/accept',
                 active: false
             });
 
@@ -159,23 +158,23 @@ describe('model-integration', function() {
             });
             LocalStorageAdapter.register('tour');
             _tour = new Models.Tour({
-                uri: '/tour/welcome',
+                uri: '/newTour/welcome',
                 tasks: [ task1, task2 ],
                 done: false,
                 activeTask: 0
             });
         });
         after(function() {
-            Models.Tour.remove('/tour/welcome');
+            Models.Tour.remove('/newTour/welcome');
             Models.Tour = null;
 
-            Models.Task.remove('/task/read-manual');
-            Models.Task.remove('/task/accept');
+            Models.Task.remove('/newTask/read-manual');
+            Models.Task.remove('/newTask/accept');
             Models.Task = null;
             _tour.dispose();
         });
         it('gets events on model modification', function() {
-            var tour = Models.Tour.get('/tour/welcome');
+            var tour = Models.Tour.get('/newTour/welcome');
             var spy = sinon.spy();
             tour.on('doneChange', spy);
             tour.done = false;
@@ -183,19 +182,16 @@ describe('model-integration', function() {
             tour.tasks[0].active = true;
 
             expect(spy.callCount, 'to equal', 2);
-            tour.dispose();
         });
         it('gets events on both instances', function() {
-            var tour1 = Models.Tour.get('/tour/welcome');
-            var tour2 = Models.Tour.get('/tour/welcome');
+            var tour1 = Models.Tour.get('/newTour/welcome');
+            var tour2 = Models.Tour.get('/newTour/welcome');
 
             var spy = sinon.spy();
             tour2.on('doneChange', spy);
             tour1.done = false;
 
             expect(spy.called, 'to be true');
-            tour1.dispose();
-            tour2.dispose();
         });
     });
     describe('retrieve', function() {
@@ -301,7 +297,7 @@ describe('model-integration', function() {
             var tour = Models.Tour.get(_tour.uri);
             var unsubscribe = tour.listenTo('change', spy);
 
-            var user = Models.Tour.get(_tour.user.uri);
+            var user = Models.User.get(_tour.user.uri);
             user.name = 'new name';
             unsubscribe();
             expect(spy.called, 'to be true');
@@ -312,7 +308,7 @@ describe('model-integration', function() {
             Models.User.resetCache();
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
-            var user = Models.Tour.get(_tour.user.uri);
+            var user = Models.User.get(_tour.user.uri);
 
             var unsubscribe = user.listenTo('change', spy);
 
@@ -354,24 +350,24 @@ describe('model-integration', function() {
             Models.User = null;
         });
         it('can get list of objects', function() {
-            var users = Models.User.getAll({ name: 'Filip' });
+            var users = Models.User.getAll({ filter : { name: 'Filip' }});
             expect(users.length, 'to equal', 2);
 
-            users = Models.User.getAll({ name: 'Filip', surname: 'Brown' });
+            users = Models.User.getAll( { filter : { name: 'Filip', surname: 'Brown' } });
             expect(users.length, 'to equal', 1);
         });
         it('can get list of objects without cache', function() {
             Models.User.resetCache();
-            var users = Models.User.getAll({ name: 'Filip' });
+            var users = Models.User.getAll( { filter: { name: 'Filip' }});
             expect(users.length, 'to equal', 2);
 
-            users = Models.User.getAll({ name: 'Filip', surname: 'Brown' });
+            users = Models.User.getAll({ filter: { name: 'Filip', surname: 'Brown' } });
             expect(users.length, 'to equal', 1);
         });
         it('returns the same instances of objects', function() {
             Models.User.resetCache();
-            var userInstance1 = Models.User.getAll({ uri: _models[0].uri })[0];
-            var userInstance2 = Models.User.getAll({ uri: _models[0].uri })[0];
+            var userInstance1 = Models.User.getAll({ filter : { uri: _models[0].uri }})[0];
+            var userInstance2 = Models.User.getAll( { filter : { uri: _models[0].uri }})[0];
             expect(userInstance1, 'to be', userInstance2);
         });
         it('can subscribe to object events', function() {
@@ -384,8 +380,8 @@ describe('model-integration', function() {
         });
         it('shares events between objects', function() {
             Models.User.resetCache();
-            var userInstance1 = Models.User.getAll({ uri: _models[0].uri })[0];
-            var userInstance2 = Models.User.getAll({ uri: _models[0].uri })[0];
+            var userInstance1 = Models.User.getAll({ filter : { uri: _models[0].uri }})[0];
+            var userInstance2 = Models.User.getAll({ filter: { uri: _models[0].uri }})[0];
             var spy = sinon.spy();
             userInstance1.listenTo('nameChange', spy );
             userInstance2.name = 'new name';
@@ -394,9 +390,11 @@ describe('model-integration', function() {
         it('shares events between objects (with get method)', function() {
             Models.User.resetCache();
             var userInstance1 = Models.User.get(_models[0].uri);
-            var userInstance2 = Models.User.getAll({ uri: _models[0].uri })[0];
+            var userInstance2 = Models.User.getAll({ filter: { uri: _models[0].uri }})[0];
             var spy = sinon.spy();
-            userInstance1.listenTo('nameChange', spy );
+            userInstance1.listenTo('nameChange', function() {
+                spy();
+            });
             userInstance2.name = 'new name';
             expect(spy.calledOnce, 'to be true');
         });

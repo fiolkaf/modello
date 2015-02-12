@@ -1,16 +1,15 @@
 function flattenNestedObjects(properties, data) {
     var result = Object.assign({}, data);
-    properties.forEach(function(property) {
-        propertyName = property.name;
-        if (!result[propertyName]) {
+    Object.keys(properties).forEach(function(key) {
+        if (!result[key]) {
             return;
         }
-        if (!property.array) {
-            result[propertyName] = result[propertyName].uri;
+        if (!properties[key].array) {
+            result[key] = result[key].uri;
             return;
         }
 
-        result[propertyName] = result[propertyName].map(function(obj) {
+        result[key] = result[key].map(function(obj) {
             return obj.uri ? obj.uri : obj;
         });
     });
@@ -20,18 +19,17 @@ function flattenNestedObjects(properties, data) {
 
 function resolveNestedObjects(properties, data, getLookup) {
     var result = Object.assign({}, data);
-    properties.forEach(function(property) {
-        var propertyName = property.name;
-        if (!result[propertyName]) {
+    Object.keys(properties).forEach(function(key) {
+        if (!result[key]) {
             return;
         }
-        if (!property.array) {
-            result[propertyName] = getLookup(property.type, result[propertyName]);
+        if (!properties[key].array) {
+            result[key] = getLookup(properties[key].type, result[key]);
             return;
         }
 
-        result[propertyName] = result[propertyName].map(function(uri) {
-            return typeof uri === 'string' ? getLookup(property.type, uri) : uri;
+        result[key] = result[key].map(function(uri) {
+            return typeof uri === 'string' ? getLookup(properties[key].type, uri) : uri;
         });
     });
     return result;

@@ -153,11 +153,11 @@ describe('localStorageAdapter', function() {
         users.forEach(function(user) {
             LocalStorageAdapter.save('user', user);
         });
-        
-        var result = LocalStorageAdapter.getAll('user', { name: 'Adam' });
+
+        var result = LocalStorageAdapter.getAll('user', { filter: { name: 'Adam' } });
         expect(result.length, 'to equal', 2);
 
-        result = LocalStorageAdapter.getAll('user', { name: 'Adam', surname: 'Brown' });
+        result = LocalStorageAdapter.getAll('user', { filter: { name: 'Adam', surname: 'Brown' } });
         expect(result.length, 'to equal', 1);
 
         users.forEach(function(user) {

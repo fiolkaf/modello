@@ -24,16 +24,16 @@ var LocalStorageAdapter = {
         if (data === null) {
             return null;
         }
-        var properties = getTypeProperties(type);
-        return DataTraverse.resolveNestedObjects(properties, data, LocalStorageAdapter.get);
+        return DataTraverse.resolveNestedObjects(getTypeProperties(type), data, LocalStorageAdapter.get);
     },
 
     remove: function(type, uri) {
         localStorage.removeItem(keyFromUri(type, uri));
     },
 
-    getAll: function(type, filter) {
-        filter = filter || {};
+    getAll: function(type, options) {
+        options = options || {};
+        var filter = options.filter || {};
 
         return Object.keys(localStorage).filter(function(key) {
             return key.indexOf('/' + type + 's') === 0;
@@ -53,8 +53,8 @@ var LocalStorageAdapter = {
     },
 
     save: function(type, data) {
-        var properties = getTypeProperties(type);
-        data = DataTraverse.flattenNestedObjects(properties, data);
+        data = JSON.parse(JSON.stringify(data));
+        data = DataTraverse.flattenNestedObjects(getTypeProperties(type), data);
         localStorage.setItem(keyFromUri(type, data.uri), JSON.stringify(data));
     }
 };

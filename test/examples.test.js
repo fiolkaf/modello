@@ -143,10 +143,10 @@ describe('model-examples', function() {
             });
             // Get you model using get method on the model
             var result = Models.Garden.get('/garden/myGarden');
-            expect(myGarden, 'to be', result);
+            expect(myGarden, 'to equal', result);
 
             // Query models using getAll method
-            result = Models.Garden.getAll( { pumpkins: 0 });
+            result = Models.Garden.getAll( { filter : { pumpkins: 0 } });
             expect(result.length, 'to equal', 2);
 
             // Model changes will be saved on each modification

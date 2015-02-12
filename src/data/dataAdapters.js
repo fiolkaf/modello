@@ -14,25 +14,25 @@ var DataAdapters = {
             throw constructorName + 'has already data adapter defined.';
         }
 
-        var dataProvider = new DataProvider(dataAdapter);
+        var dataProvider = new DataProvider(type, dataAdapter);
 
         modelConstructor.get = function(uri) {
-            return dataProvider.get(type, uri);
+            return dataProvider.get(uri);
         };
-        modelConstructor.getAll = function(filter) {
-            return dataProvider.getAll(type, filter);
+        modelConstructor.getAll = function(options) {
+            return dataProvider.getAll(options);
         };
         modelConstructor.save = function(data) {
-            return dataProvider.save(type, data);
+            return dataProvider.save(data);
         };
         modelConstructor.create = function(data) {
-            return dataProvider.save(type, data);
+            return dataProvider.save(data);
         };
         modelConstructor.resetCache = function() {
             return dataProvider.resetCache();
         };
         modelConstructor.remove = function(uri) {
-            return dataProvider.remove(type, uri);
+            return dataProvider.remove(uri);
         };
     }
 };
