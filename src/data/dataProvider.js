@@ -81,10 +81,10 @@ var DataProvider = function(type, dataAdapter) {
         }
 
         if (response instanceof Promise) {
-            result.dataReady = response;
+            Object.assign(result, {dataReady : response });
         } else {
             getArray(response);
-            result.dataReady = Promise.resolve(response);
+            Object.assign(result, {dataReady : Promise.resolve(response)});
         }
 
         result.dataReady.then(getArray, function(err) {
