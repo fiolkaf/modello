@@ -43,8 +43,7 @@ var DataProvider = function(type, dataAdapter) {
         _cache[uri] = model;
 
         if (response instanceof Promise) {
-            Object.assign(model, { dataReady : response });
-            model.dataReady.then(function(data) {
+            response.then(function(data) {
                 model.data(data);
             }, function(err) {
                 console.log(err);
@@ -52,7 +51,6 @@ var DataProvider = function(type, dataAdapter) {
             });
         } else {
             model.data(response);
-            Object.assign(model, {dataReady : Promise.resolve(response) });
         }
 
         return model;

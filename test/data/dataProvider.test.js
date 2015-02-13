@@ -47,33 +47,27 @@ describe('dataProvider test', function() {
         var provider = getProvider('garden');
         var model = provider.data.get();
         expect(model.hasOwnProperty('property'), 'to be true');
-        var spy = sinon.spy();
+        model.dataReady.then(function() {
+            expect(model.property, 'to be true');
+            model.dispose();
+            done();
+        });
 
-        model.dataReady.then(spy);
-
-        provider
-            .resolve({ property: true })
-            .then(function() {
-                expect(spy.called, 'to be true');
-                expect(model.property, 'to be true');
-                model.dispose();
-                done();
-            });
+        provider.resolve({ property: true });
     });
     it('it receives data nested models after lazy loading', function(done) {
         var provider = getProvider('garden');
         var model = provider.data.get();
         expect(model.hasOwnProperty('property'), 'to be true');
-        var spy = sinon.spy();
 
-        model.dataReady.then(spy);
+
         provider.resolve({
             property: true,
             flowers: [ { type: 'tulipan' }, { type : 'hiacynt' }],
             gate: { color: 'blue' }
-        })
-        .then(function() {
-            expect(spy.calledOnce, 'to be true');
+        });
+
+        model.dataReady.then(function() {
             expect(model.property, 'to be true');
             expect(model.flowers.length, 'to equal', 2);
             expect(model.flowers[0].type, 'to equal', 'tulipan');

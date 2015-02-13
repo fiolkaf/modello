@@ -113,6 +113,14 @@ function ModelFactory(models, type, definition) {
 
         var modelData = getModelTemplate();
         var _this = new RemoteObject(modelData);
+
+        var dataReady;
+        _this.dataReady = new Promise(function(resolve) {
+            dataReady = function(data) {
+                resolve(data);
+            };
+        });
+
         Observer.mixin(_this);
 
         _this.data = function(data) {
@@ -128,6 +136,7 @@ function ModelFactory(models, type, definition) {
                 save(_this);
             });
             _this.addDisposer(unsubscribe);
+            dataReady(data);
 
             return _this;
         };
