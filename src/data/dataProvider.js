@@ -40,10 +40,10 @@ var DataProvider = function(type, dataAdapter) {
         }
 
         var model = createModel();
-        _cache[model.uri] = model;
+        _cache[uri] = model;
 
         if (response instanceof Promise) {
-            model.dataReady = response;
+            Object.assign(model, { dataReady : response });
             model.dataReady.then(function(data) {
                 model.data(data);
             }, function(err) {
@@ -52,7 +52,7 @@ var DataProvider = function(type, dataAdapter) {
             });
         } else {
             model.data(response);
-            model.dataReady = Promise.resolve(response);
+            Object.assign(model, {dataReady : Promise.resolve(response) });
         }
 
         return model;
