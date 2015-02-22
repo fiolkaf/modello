@@ -1,6 +1,6 @@
 {
   "name": "modello",
-  "version": "0.0.25",
+  "version": "0.0.27",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -30,9 +30,10 @@
     "karma-sinon": "^1.0.4",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
-    "unexpected": "^5.8.1"
+    "unexpected": "^5.8.1",
+    "osync": "0.0.35"
   },
-  "dependencies": {
-    "osync": "0.0.32"
+  "peerDependencies": {
+    "bussi": "0.1.1"
   }
 }

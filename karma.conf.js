@@ -16,6 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
         { pattern: 'node_modules/osync/**/**/!(*test).js', included: 'false' },
+        { pattern: 'node_modules/bussi/**/**/!(*test).js', included: 'false' },
         { pattern: 'node_modules/es6-shim/*.js', included: 'true' },
         { pattern: 'node_modules/unexpected/unexpected.js', watched: 'false', served:  'true', included: 'false' },
          'src/**/*.js',
@@ -33,6 +34,7 @@ module.exports = function(config) {
     preprocessors: {
         'node_modules/es6-shim/*.js': ['commonjs'],
         'node_modules/osync/**/*.js': ['commonjs'],
+        'node_modules/bussi/**/*.js': ['commonjs'],
         'src/**/*.js': ['commonjs'],
         'test/**/*.js': ['commonjs'],
         'node_modules/unexpected/unexpected.js': ['commonjs']
@@ -64,7 +66,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Safari'],
+    browsers: ['PhantomJS'],
 
 
     // Continuous Integration mode
