@@ -66,7 +66,7 @@ describe('models', function() {
             Models.define('person', {
                 property: null,
                 getProperty: function() {
-                    return property;
+                    return this.property;
                 }
             });
             Models.Person = null;

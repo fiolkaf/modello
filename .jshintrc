@@ -20,7 +20,10 @@
     "predef"        : [  // Custom globals.
         "describe",
         "it",
-        "define"
+        "before",
+        "after",
+        "define",
+        "sinon"
     ],
 
 
