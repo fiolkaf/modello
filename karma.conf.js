@@ -15,7 +15,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-        { pattern: 'node_modules/osync/**/**/!(*test).js', included: 'false' },
+        { pattern: 'node_modules/osync/index.js', included: 'false' },
+        { pattern: 'node_modules/osync/**/!(test)/!(*test).js', included: 'false' },
         { pattern: 'node_modules/bussi/**/**/!(*test).js', included: 'false' },
         { pattern: 'node_modules/es6-shim/*.js', included: 'true' },
         { pattern: 'node_modules/unexpected/unexpected.js', watched: 'false', served:  'true', included: 'false' },
@@ -57,7 +58,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_DEBUG,
 
 
     // enable / disable watching file and executing tests whenever any file changes
