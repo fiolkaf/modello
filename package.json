@@ -34,6 +34,6 @@
   },
   "peerDependencies": {
     "bussi": "^0.1.1",
-    "osync": "^0.0.39"
+    "osync": "^0.0.40"
   }
 }
