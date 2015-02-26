@@ -1,5 +1,7 @@
+var assign = Object.assign || require('object.assign');
+
 function flattenNestedObjects(properties, data) {
-    var result = Object.assign({}, data);
+    var result = assign({}, data);
     Object.keys(properties).forEach(function(key) {
         if (!result[key]) {
             return;
@@ -18,7 +20,7 @@ function flattenNestedObjects(properties, data) {
 }
 
 function resolveNestedObjects(properties, data, getLookup) {
-    var result = Object.assign({}, data);
+    var result = assign({}, data);
     Object.keys(properties).forEach(function(key) {
         if (!result[key]) {
             return;

@@ -3,6 +3,7 @@ var Observer = require('../model/observer');
 var ObservableArray = require('osync').ObservableArray;
 var ObservableObject = require('osync').ObservableObject;
 var Disposable = require('osync').Mixin.Disposable;
+var assign = Object.assign || require('object.assign');
 
 var DataProvider = function(type, dataAdapter) {
     Disposable.mixin(this);
@@ -12,7 +13,7 @@ var DataProvider = function(type, dataAdapter) {
     function getDataForModel(model) {
         var Constructor = Models.getByType(type);
         var properties = Constructor.Type.getNonPersistentProperties();
-        var result = Object.assign({}, model);
+        var result = assign({}, model);
         Object.keys(properties).forEach(function(key) {
             delete result[key];
         });
@@ -79,10 +80,10 @@ var DataProvider = function(type, dataAdapter) {
         }
 
         if (response instanceof Promise) {
-            Object.assign(result, {dataReady : response });
+            assign(result, {dataReady : response });
         } else {
             getArray(response);
-            Object.assign(result, {dataReady : Promise.resolve(response)});
+            assign(result, {dataReady : Promise.resolve(response)});
         }
 
         result.dataReady.then(getArray, function(err) {
