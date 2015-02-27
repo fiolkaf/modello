@@ -136,7 +136,7 @@ function ModelFactory(models, type, definition) {
                 save(_this);
             });
             _this.addDisposer(unsubscribe);
-            dataReady(data);
+            dataReady(Object.keys(data).length ? data: null);
 
             return _this;
         };

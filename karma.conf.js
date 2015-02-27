@@ -34,8 +34,8 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
         'node_modules/es6-shim/*.js': ['commonjs'],
-        'node_modules/osync/**/*.js': ['commonjs'],
         'node_modules/bussi/**/*.js': ['commonjs'],
+        'node_modules/osync/**/*.js': ['commonjs'],
         'src/**/*.js': ['commonjs'],
         'test/**/*.js': ['commonjs'],
         'node_modules/unexpected/unexpected.js': ['commonjs']
