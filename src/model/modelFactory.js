@@ -1,14 +1,8 @@
+var utils= require('../data/utils');
+var uuid = require('../data/uuid');
+var Observer = require('./observer');
 var RemoteObject = require('osync').RemoteObject;
 var TypeDefinition = require('./typeDefinition');
-var Observer = require('./observer');
-
-function guid() {
-    function _p8(s) {
-        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
-        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
-    }
-    return _p8() + _p8(true) + _p8(true) + _p8();
-}
 
 function ModelFactory(models, type, definition) {
     var _factory = this;
@@ -24,10 +18,10 @@ function ModelFactory(models, type, definition) {
         }
 
         if (property.array) {
-            return property.default || [];
+            return property.default ? utils.deepClone(property.default) : [];
         }
 
-        return property.default;
+        return property.default ? utils.deepClone(property.default) : property.default;
     }
 
     function getModelTemplate() {
@@ -108,7 +102,7 @@ function ModelFactory(models, type, definition) {
         }
         this.Type = _typeDefinition;
         if (data && !data.uri) {
-            data.uri = '/' + type + '/' + guid();
+            data.uri = '/' + type + '/' + uuid();
         }
 
         var modelData = getModelTemplate();
@@ -125,7 +119,7 @@ function ModelFactory(models, type, definition) {
 
         _this.data = function(data) {
             if (!data) {
-                return JSON.parse(JSON.stringify(_this));
+                return utils.deepClone(_this);
             }
             _this.startChanges();
             addData(_this, data);

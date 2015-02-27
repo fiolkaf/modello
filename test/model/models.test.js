@@ -60,6 +60,20 @@ describe('models', function() {
             person.dispose();
             Models.Person = null;
         });
+        it('does not share default properties between objects', function() {
+            Models.define('person', {
+                test: { array: true,  default: [{id: 1}, {id: 2}, {id: 3}] }
+            });
+            var person1 = new Models.Person();
+            person1.test.push({id: 4});
+
+            var person2 = new Models.Person();
+            expect(person1.data().test, 'to equal', [{id: 1}, {id: 2}, {id: 3}, {id: 4}]);
+            expect(person2.data().test, 'to equal', [{id: 1}, {id: 2}, {id: 3}]);
+            person1.dispose();
+            person2.dispose();
+            Models.Person = null;
+        });
     });
     describe('extend', function() {
         it('can extend model with methods', function() {
