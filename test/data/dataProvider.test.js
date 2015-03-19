@@ -51,15 +51,16 @@ describe('dataProvider test', function() {
             expect(model.property, 'to be true');
             model.dispose();
             done();
+        }).catch(function(err) {
+            console.log(err);
+            throw err;
         });
-
         provider.resolve({ property: true });
     });
     it('it receives data nested models after lazy loading', function(done) {
         var provider = getProvider('garden');
         var model = provider.data.get();
         expect(model.hasOwnProperty('property'), 'to be true');
-
 
         provider.resolve({
             property: true,

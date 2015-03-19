@@ -17,15 +17,18 @@ var DataProvider = function(type, dataAdapter) {
         Object.keys(properties).forEach(function(key) {
             delete result[key];
         });
+        if (result.dataReady) {
+            delete result.dataReady;
+        }
         return result;
     }
 
-    function createModel() {
+    function createModel(data) {
         var Constructor = Models.getByType(type);
         if (!Constructor) {
             throw 'Model ' + type + ' is not defined';
         }
-        var model = new Constructor(null);
+        var model = new Constructor(data, { save: false });
 
         return model;
     }
@@ -40,14 +43,14 @@ var DataProvider = function(type, dataAdapter) {
             return response;
         }
 
-        var model = createModel();
+        var model = createModel( { uri: uri });
         _cache[uri] = model;
 
         if (response instanceof Promise) {
             response.then(function(data) {
                 model.data(data);
             }, function(err) {
-                console.log(err);
+                console.log('Error', err);
                 throw err;
             });
         } else {
@@ -58,20 +61,16 @@ var DataProvider = function(type, dataAdapter) {
     };
 
     this.getAll = function(options) {
-        var key = type + JSON.stringify(options);
-        if (_cache[key]) {
-            return _cache[key];
-        }
+        options = options || {};
 
         var result = new ObservableArray([]);
-        _cache[key] = result;
 
         Observer.mixin(result);
         var response = dataAdapter.getAll(type, options);
 
         function getArray(data) {
             data.map(function(item) {
-                var model = _cache[item.uri] || createModel().data(item);
+                var model = _cache[item.uri] || createModel(null).data(item);
                 _cache[model.uri] = model;
                 return model;
             }).forEach(function(item) {
@@ -87,7 +86,6 @@ var DataProvider = function(type, dataAdapter) {
         }
 
         result.dataReady.then(getArray, function(err) {
-            console.log(err);
             throw err;
         });
 
@@ -100,9 +98,13 @@ var DataProvider = function(type, dataAdapter) {
         return dataAdapter.save(type, data);
     };
 
+    this.update = function(uri, model, updates) {
+        return dataAdapter.update(type, uri, model, updates);
+    };
+
     this.remove = function(uri) {
         _cache[uri] = null;
-        dataAdapter.remove(type, uri);
+        return dataAdapter.remove(type, uri);
     };
 
     this.addCache = function(uri, model) {

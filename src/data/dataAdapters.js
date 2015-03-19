@@ -16,10 +16,17 @@ var DataAdapters = {
 
         var dataProvider = new DataProvider(type, dataAdapter);
 
-        modelConstructor.get = function(uri) {
-            return dataProvider.get(uri);
+        modelConstructor.get = function(uri, properties) {
+            if (!properties) {
+                properties = Object.keys(modelConstructor.Type.getProperties());
+            }
+            return dataProvider.get(uri, properties);
         };
         modelConstructor.getAll = function(options) {
+            options = options || {};
+            if (!options.properties) {
+                options.properties = Object.keys(modelConstructor.Type.getProperties());
+            }
             return dataProvider.getAll(options);
         };
         modelConstructor.save = function(data) {
@@ -27,6 +34,9 @@ var DataAdapters = {
         };
         modelConstructor.create = function(data) {
             return dataProvider.save(data);
+        };
+        modelConstructor.update = function(uri, model, changes) {
+            return dataProvider.update(uri, model, changes);
         };
         modelConstructor.resetCache = function() {
             return dataProvider.resetCache();

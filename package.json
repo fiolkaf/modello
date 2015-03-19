@@ -1,6 +1,6 @@
 {
   "name": "modello",
-  "version": "0.0.38",
+  "version": "0.0.43",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/fiolkaf/modello",
   "devDependencies": {
+    "object.assign": "^1.1.1",
     "es6-shim": "^0.24.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.0",
@@ -32,12 +33,13 @@
     "sinon": "^1.12.2",
     "unexpected": "^5.8.1",
     "bussi": "^0.1.1",
-    "osync": "^0.0.42"
+    "osync": "^0.0.43"
   },
   "peerDependencies": {
     "bussi": "^0.1.2"
   },
   "dependencies": {
-    "osync": "^0.0.42"
+    "object.assign": "^1.1.1",
+    "osync": "0.0.43"
   }
 }

@@ -1,8 +1,8 @@
-var utils= require('../data/utils');
-var uuid = require('../data/uuid');
-var Observer = require('./observer');
 var RemoteObject = require('osync').RemoteObject;
 var TypeDefinition = require('./typeDefinition');
+var Observer = require('./observer');
+var objectAssign = Object.assign || require('object.assign');
+var uuid = require('../data/uuid');
 
 function ModelFactory(models, type, definition) {
     var _factory = this;
@@ -18,10 +18,10 @@ function ModelFactory(models, type, definition) {
         }
 
         if (property.array) {
-            return property.default ? utils.deepClone(property.default) : [];
+            return property.default ? property.default.slice(0) : [];
         }
 
-        return property.default ? utils.deepClone(property.default) : property.default;
+        return property.default;
     }
 
     function getModelTemplate() {
@@ -42,6 +42,10 @@ function ModelFactory(models, type, definition) {
                 return !typedProperties[key];
             })
             .forEach(function(key) {
+                if (key === 'uri' && data[key] === model[key]) {
+                    return;
+                }
+
                 if (!model.hasOwnProperty(key)) {
                     model.defineProperty(key);
                 }
@@ -54,7 +58,11 @@ function ModelFactory(models, type, definition) {
                     return;
                 }
 
-                model[key] = data[key];
+                if (typeof data[key] === 'object' && data[key] !== null) {
+                    model[key] = data[key].hasOwnProperty('on') ? data[key] : new RemoteObject(data[key]);
+                } else {
+                    model[key] = data[key];
+                }
             });
     }
 
@@ -65,15 +73,25 @@ function ModelFactory(models, type, definition) {
             var Model = models.getByType(property.type);
 
             var modelData = getValue(property, data[key]);
+            if (typeof modelData === 'undefined') {
+                model[key] = property.array ? [] : null;
+                return;
+            }
+
             if (!property.array) {
-                if (modelData) {
-                    model[key] = modelData.hasOwnProperty('on') ? modelData : new Model(modelData);
+                var element = data[key];
+                if (!element.hasOwnProperty('on')) {
+                    element = new models.getByType(property.type)(data[key], { save: false });
                 }
+                model[key] = element;
                 return;
             }
 
             modelData.forEach(function(item) {
-                var element = item.hasOwnProperty('on') ? item : new Model(item);
+                var element = item;
+                if (!item.hasOwnProperty('on')) {
+                    element = new models.getByType(property.type)(item, { save: false });
+                }
                 model[key].push(element);
             });
         });
@@ -92,20 +110,45 @@ function ModelFactory(models, type, definition) {
     function save(model) {
         var Constructor = models.getByType(type);
         if (Constructor.save) {
-            Constructor.save(model);
+            return Constructor.save(model);
         }
     }
 
-    function Model(data) {
+    function update(model, changes) {
+        var Constructor = models.getByType(type);
+        if (!Constructor.update) {
+            return;
+        }
+        var result = Constructor.update(model.uri, model, changes) || {};
+        if (result.then) {
+            model.dataReady = result;
+            return model.dataReady;
+        }
+
+        return result;
+    }
+
+    function shouldSendUpdate(changes) {
+        return changes
+            .map(function(change) {
+                return change.property;
+            })
+            .filter(function(name) {
+                return ['id', 'uri'].indexOf(name) < 0;
+            }).length;
+    }
+
+    function Model(data, options) {
         if (typeof data === 'undefined') {
             data = {};
         }
+        options = options || {};
+        options.save = options.hasOwnProperty('save') ? options.save : true;
+
         this.Type = _typeDefinition;
-        if (data && !data.uri) {
-            data.uri = '/' + type + '/' + uuid();
-        }
 
         var modelData = getModelTemplate();
+        modelData.uri = data && data.uri ? data.uri : '/' + type + '/' + uuid();
         var _this = new RemoteObject(modelData);
 
         var dataReady;
@@ -118,35 +161,46 @@ function ModelFactory(models, type, definition) {
         Observer.mixin(_this);
 
         _this.data = function(data) {
-            if (!data) {
-                return utils.deepClone(_this);
+            if (typeof data === 'undefined') {
+                return JSON.parse(JSON.stringify(_this));
             }
             _this.startChanges();
-            addData(_this, data);
-            addNestedModels(_this, data);
-            _this.supressChanges();
+            addData(_this, data || {});
+            addNestedModels(_this, data || {});
+            _this._trigger('changed', _this.supressChanges());
 
-            var unsubscribe = _this.on('changed', function() {
-                save(_this);
+            var unsubscribe = _this.on('changed', function(changes) {
+                if (shouldSendUpdate(changes)) {
+                    update(_this, changes);
+                }
             });
+
             _this.addDisposer(unsubscribe);
-            dataReady(Object.keys(data).length ? data: null);
+            dataReady(data);
 
             return _this;
         };
 
         addFunctions(_this);
 
-        if (data) {
+        if (data && Object.keys(data).filter(function(key) { return key !== 'uri'; }).length > 0) {
             _this.data(data);
+        }
+
+        if (data && options.save) {
+            var result = save(_this) || {};
+            if (result.then) {
+                _this.dataReady = result;
+                _this.dataReady.then(function(data) {
+                    objectAssign(_this, data);
+                });
+            } else {
+                objectAssign(_this, result);
+            }
         }
 
         if (_this.init) {
             _this.init();
-        }
-
-        if (data) {
-            save(_this);
         }
 
         return _this;

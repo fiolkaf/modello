@@ -40,7 +40,7 @@ describe('model-examples', function() {
             Models.define('garden', {
                 pumpkins: { default: 0 },
             });
-            garden = new Models.Garden();
+            var garden = new Models.Garden();
             expect(garden.pumpkins, 'to equal', 0);
 
             garden = new Models.Garden({ carrots: 7 });
@@ -54,7 +54,7 @@ describe('model-examples', function() {
             Models.define('garden', {
                 owners: { array: true },
             });
-            garden = new Models.Garden();
+            var garden = new Models.Garden();
             expect(garden.owners, 'to equal', []);
 
             Models.Garden = null;
@@ -68,8 +68,8 @@ describe('model-examples', function() {
 
             // Define a new 'garden' model
             Models.define('garden', {
-                pumpkin: { type: 'pumpkin' }, // embedded mo
-                strawberries: { type: 'strawberry', array: true }
+                pumpkin: { type: 'pumpkin' }, // embedded model
+                strawberries: { type: 'strawberry', array: true } // embedded array of models
             });
 
             var garden = new Models.Garden({
@@ -92,7 +92,7 @@ describe('model-examples', function() {
                     return this.pumpkins + this.carrots;
                 }
             });
-            garden = new Models.Garden();
+            var garden = new Models.Garden();
             expect(garden.getVeggiesCount(), 'to equal', 4);
 
             Models.Garden = null;
@@ -105,7 +105,7 @@ describe('model-examples', function() {
                     this.pumpkins = 1;
                 }
             });
-            garden = new Models.Garden();
+            var garden = new Models.Garden();
             expect(garden.pumpkins, 'to equal', 1);
 
             Models.Garden = null;
@@ -116,7 +116,7 @@ describe('model-examples', function() {
             Models.define('garden', {
                 pumpkins: { default: 0 }
             });
-            garden = new Models.Garden();
+            var garden = new Models.Garden();
             var callback = sinon.spy();
             garden.listenTo('pumpkinsChange', callback);
             garden.pumpkins++;
@@ -133,7 +133,6 @@ describe('model-examples', function() {
             });
             // Specify that we store garden models in localstorage
             LocalStorageAdapter.register('garden');
-
             // New instance is created and saved, it gets assigned uri property
             var garden = new Models.Garden();
 

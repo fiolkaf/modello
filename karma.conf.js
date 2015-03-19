@@ -19,6 +19,8 @@ module.exports = function(config) {
         { pattern: 'node_modules/osync/**/!(test)/!(*test).js', included: 'false' },
         { pattern: 'node_modules/bussi/**/**/!(*test).js', included: 'false' },
         { pattern: 'node_modules/es6-shim/*.js', included: 'true' },
+        { pattern: 'node_modules/object.assign/*.js', included: 'true' },
+        { pattern: 'node_modules/object.assign/**/!(test)/*.js', included: 'true' },
         { pattern: 'node_modules/unexpected/unexpected.js', watched: 'false', served:  'true', included: 'false' },
          'src/**/*.js',
          'test/**/*.js'
@@ -34,6 +36,7 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
         'node_modules/es6-shim/*.js': ['commonjs'],
+        'node_modules/object.assign/**': ['commonjs'],
         'node_modules/bussi/**/*.js': ['commonjs'],
         'node_modules/osync/**/*.js': ['commonjs'],
         'src/**/*.js': ['commonjs'],
@@ -62,7 +65,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // start these browsers

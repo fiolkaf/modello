@@ -104,10 +104,10 @@ describe('model-integration', function() {
             var task1Result = LocalStorageAdapter.get('task', task1.uri);
             tour.tasks.push(task1);
 
-            task2 = new Models.Task({
+            var task2 = new Models.Task({
                 name: 'Second welcome task'
             });
-            task2Result = LocalStorageAdapter.get('task', task2.uri);
+            var task2Result = LocalStorageAdapter.get('task', task2.uri);
             tour.tasks.push(task2);
             var result = LocalStorageAdapter.get('tour', tour.uri);
 
@@ -263,6 +263,7 @@ describe('model-integration', function() {
             expect(result.tasks[0].name, 'to equal', 'New name');
         });
         it('gets notification about child array changes (model from LocalStorage)', function() {
+            _tour.dispose();
             Models.Tour.resetCache();
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
@@ -277,6 +278,7 @@ describe('model-integration', function() {
             expect(tour.tasks[0].name, 'to equal', 'new name');
         });
         it('gets notification about child changes (model from LocalStorage)', function() {
+            _tour.dispose();
             Models.Tour.resetCache();
             var spy = sinon.spy();
             var tour = Models.Tour.get(_tour.uri);
@@ -291,6 +293,7 @@ describe('model-integration', function() {
             unsubscribe();
         });
         it('gets notification from child objects', function() {
+            _tour.dispose();
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
@@ -317,6 +320,7 @@ describe('model-integration', function() {
             expect(spy.called, 'to be true');
         });
         it('gets notification from hierarchy objects', function() {
+            _tour.dispose();
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
