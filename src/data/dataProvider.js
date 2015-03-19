@@ -13,7 +13,7 @@ var DataProvider = function(type, dataAdapter) {
     function getDataForModel(model) {
         var Constructor = Models.getByType(type);
         var properties = Constructor.Type.getNonPersistentProperties();
-        var result = assign({}, model);
+        var result = assign({}, JSON.parse(JSON.stringify(model)));
         Object.keys(properties).forEach(function(key) {
             delete result[key];
         });
