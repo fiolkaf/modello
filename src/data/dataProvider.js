@@ -99,7 +99,7 @@ var DataProvider = function(type, dataAdapter) {
     };
 
     this.update = function(uri, model, updates) {
-        var data = getDataForModel(model)
+        var data = getDataForModel(model);
         return dataAdapter.update(type, uri, data, updates);
     };
 
