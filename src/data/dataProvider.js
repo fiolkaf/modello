@@ -33,12 +33,12 @@ var DataProvider = function(type, dataAdapter) {
         return model;
     }
 
-    this.get = function(uri) {
+    this.get = function(uri, properties) {
         if (_cache[uri]) {
             return _cache[uri];
         }
 
-        var response = dataAdapter.get(type, uri);
+        var response = dataAdapter.get(type, uri, properties);
         if (!response) {
             return response;
         }
