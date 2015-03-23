@@ -1,6 +1,6 @@
 {
   "name": "modello",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -33,13 +33,13 @@
     "sinon": "^1.12.2",
     "unexpected": "^5.8.1",
     "bussi": "^0.1.1",
-    "osync": "^0.0.43"
+    "osync": "^0.0.44"
   },
   "peerDependencies": {
     "bussi": "^0.1.2"
   },
   "dependencies": {
     "object.assign": "^1.1.1",
-    "osync": "0.0.43"
+    "osync": "0.0.44"
   }
 }

@@ -13,12 +13,12 @@ describe('model-integration', function() {
             });
             LocalStorageAdapter.register('tour');
             var tour = new Models.Tour({
-                uri: '/tours/welcome',
+                _uri: '/tours/welcome',
                 default: true
             });
             var result = Models.Tour.get('/tours/welcome');
 
-            expect(result.uri, 'to equal', '/tours/welcome');
+            expect(result._uri, 'to equal', '/tours/welcome');
             expect(result.default, 'to equal', true);
 
             tour.dispose();
@@ -37,7 +37,7 @@ describe('model-integration', function() {
             LocalStorageAdapter.register('tour');
 
             var tour = new Models.Tour({
-                uri: '/tours/welcome',
+                _uri: '/tours/welcome',
                 done: false,
                 activeTask: 0
             });
@@ -45,21 +45,21 @@ describe('model-integration', function() {
             LocalStorageAdapter.register('task');
 
             var task1 = new Models.Task({
-                uri: '/tasks/read-manual',
+                _uri: '/tasks/read-manual',
                 active: false
             });
             tour.tasks.push(task1);
 
             var task2 = new Models.Task({
-                uri: '/tasks/accept',
+                _uri: '/tasks/accept',
                 active: false
             });
             tour.tasks.push(task2);
 
             var tourResult = Models.Tour.get('/tours/welcome');
 
-            expect(tourResult.tasks[0].uri, 'to equal', '/tasks/read-manual');
-            expect(tourResult.tasks[1].uri, 'to equal', '/tasks/accept');
+            expect(tourResult.tasks[0]._uri, 'to equal', '/tasks/read-manual');
+            expect(tourResult.tasks[1]._uri, 'to equal', '/tasks/accept');
 
             tour.dispose();
             tourResult.dispose();
@@ -77,9 +77,9 @@ describe('model-integration', function() {
                 name: 'my task v1'
             });
 
-            var result = LocalStorageAdapter.get('task', task.uri);
+            var result = LocalStorageAdapter.get('task', task._uri);
             expect(task.name, 'to equal', result.name);
-            LocalStorageAdapter.remove('task', task.uri);
+            LocalStorageAdapter.remove('task', task._uri);
             Models.Task = null;
         });
         it('can create new nested models', function() {
@@ -101,20 +101,20 @@ describe('model-integration', function() {
             var task1 = new Models.Task({
                 name: 'First welcome task',
             });
-            var task1Result = LocalStorageAdapter.get('task', task1.uri);
+            var task1Result = LocalStorageAdapter.get('task', task1._uri);
             tour.tasks.push(task1);
 
             var task2 = new Models.Task({
                 name: 'Second welcome task'
             });
-            var task2Result = LocalStorageAdapter.get('task', task2.uri);
+            var task2Result = LocalStorageAdapter.get('task', task2._uri);
             tour.tasks.push(task2);
-            var result = LocalStorageAdapter.get('tour', tour.uri);
+            var result = LocalStorageAdapter.get('tour', tour._uri);
 
-            Models.Tour.remove(tour.uri);
+            Models.Tour.remove(tour._uri);
             Models.Tour = null;
-            Models.Task.remove(task1.uri);
-            Models.Task.remove(task2.uri);
+            Models.Task.remove(task1._uri);
+            Models.Task.remove(task2._uri);
             Models.Task = null;
             tour.dispose();
 
@@ -142,11 +142,11 @@ describe('model-integration', function() {
             Models.define('task');
             LocalStorageAdapter.register('task');
             var task1 = new Models.Task({
-                uri: '/newTask/read-manual',
+                _uri: '/newTask/read-manual',
                 active: false
             });
             var task2 = new Models.Task({
-                uri: '/newTask/accept',
+                _uri: '/newTask/accept',
                 active: false
             });
 
@@ -158,7 +158,7 @@ describe('model-integration', function() {
             });
             LocalStorageAdapter.register('tour');
             _tour = new Models.Tour({
-                uri: '/newTour/welcome',
+                _uri: '/newTour/welcome',
                 tasks: [ task1, task2 ],
                 done: false,
                 activeTask: 0
@@ -230,12 +230,12 @@ describe('model-integration', function() {
             });
         });
         after(function() {
-            Models.Tour.remove(_tour.uri);
-            Models.Task.remove(_tour.tasks[0].uri);
-            Models.Task.remove(_tour.tasks[1].uri);
-            Models.User.remove(_tour.user.uri);
-            Models.User.remove(_tour.tasks[0].user.uri);
-            Models.User.remove(_tour.tasks[1].user.uri);
+            Models.Tour.remove(_tour._uri);
+            Models.Task.remove(_tour.tasks[0]._uri);
+            Models.Task.remove(_tour.tasks[1]._uri);
+            Models.User.remove(_tour.user._uri);
+            Models.User.remove(_tour.tasks[0].user._uri);
+            Models.User.remove(_tour.tasks[1].user._uri);
 
             Models.Tour = null;
             Models.Task = null;
@@ -243,13 +243,13 @@ describe('model-integration', function() {
             _tour.dispose();
         });
         it('can retrieve nested model', function() {
-            var result = LocalStorageAdapter.get('tour', _tour.uri);
+            var result = LocalStorageAdapter.get('tour', _tour._uri);
             expect(result.tasks[0].name, 'to equal', 'First welcome task');
             expect(result.tasks[1].name, 'to equal', 'Second welcome task');
         });
         it('can modify and retrieve nested model', function() {
             _tour.tasks[0].name = 'New name';
-            var result = LocalStorageAdapter.get('tour', _tour.uri);
+            var result = LocalStorageAdapter.get('tour', _tour._uri);
             expect(result.tasks[0].name, 'to equal', 'New name');
         });
         it('gets notification about child changes', function() {
@@ -258,7 +258,7 @@ describe('model-integration', function() {
 
             _tour.tasks[0].name = 'New name';
             expect(spy.called, 'to be true');
-            var result = LocalStorageAdapter.get('tour', _tour.uri);
+            var result = LocalStorageAdapter.get('tour', _tour._uri);
             unsubscribe();
             expect(result.tasks[0].name, 'to equal', 'New name');
         });
@@ -266,14 +266,14 @@ describe('model-integration', function() {
             _tour.dispose();
             Models.Tour.resetCache();
             var spy = sinon.spy();
-            var tour = Models.Tour.get(_tour.uri);
+            var tour = Models.Tour.get(_tour._uri);
             expect(tour.tasks.length, 'to equal', 2);
             var unsubscribe = tour.listenTo('change', spy);
             tour.tasks[0].name = 'new name';
             expect(spy.called, 'to be true');
 
             Models.Tour.resetCache();
-            tour = Models.Tour.get(_tour.uri);
+            tour = Models.Tour.get(_tour._uri);
             unsubscribe();
             expect(tour.tasks[0].name, 'to equal', 'new name');
         });
@@ -281,14 +281,14 @@ describe('model-integration', function() {
             _tour.dispose();
             Models.Tour.resetCache();
             var spy = sinon.spy();
-            var tour = Models.Tour.get(_tour.uri);
+            var tour = Models.Tour.get(_tour._uri);
             var unsubscribe = tour.listenTo('change', spy);
             tour.user.name = 'new name';
             expect(spy.called, 'to be true');
 
             Models.Tour.resetCache();
 
-            tour = Models.Tour.get(_tour.uri);
+            tour = Models.Tour.get(_tour._uri);
             expect(tour.user.name, 'to equal', 'new name');
             unsubscribe();
         });
@@ -297,10 +297,10 @@ describe('model-integration', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
-            var tour = Models.Tour.get(_tour.uri);
+            var tour = Models.Tour.get(_tour._uri);
             var unsubscribe = tour.listenTo('change', spy);
 
-            var user = Models.User.get(_tour.user.uri);
+            var user = Models.User.get(_tour.user._uri);
             user.name = 'new name';
             unsubscribe();
             expect(spy.called, 'to be true');
@@ -310,8 +310,8 @@ describe('model-integration', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
-            var tour = Models.Tour.get(_tour.uri);
-            var user = Models.User.get(_tour.user.uri);
+            var tour = Models.Tour.get(_tour._uri);
+            var user = Models.User.get(_tour.user._uri);
 
             var unsubscribe = user.listenTo('change', spy);
 
@@ -324,7 +324,7 @@ describe('model-integration', function() {
             Models.Tour.resetCache();
             Models.User.resetCache();
             var spy = sinon.spy();
-            var tour = Models.Tour.get(_tour.uri);
+            var tour = Models.Tour.get(_tour._uri);
             var unsubscribe = tour.listenTo('change', spy);
 
             tour.tasks[0].user.name = 'new name';
@@ -349,7 +349,7 @@ describe('model-integration', function() {
         });
         after(function() {
             _models.forEach(function(model) {
-                Models.User.remove(model.uri);
+                Models.User.remove(model._uri);
             });
             Models.User = null;
         });
@@ -370,13 +370,13 @@ describe('model-integration', function() {
         });
         it('returns the same instances of objects', function() {
             Models.User.resetCache();
-            var userInstance1 = Models.User.getAll({ filter : { uri: _models[0].uri }})[0];
-            var userInstance2 = Models.User.getAll( { filter : { uri: _models[0].uri }})[0];
+            var userInstance1 = Models.User.getAll({ filter : { _uri: _models[0]._uri }})[0];
+            var userInstance2 = Models.User.getAll( { filter : { _uri: _models[0]._uri }})[0];
             expect(userInstance1, 'to be', userInstance2);
         });
         it('can subscribe to object events', function() {
             Models.User.resetCache();
-            var user = Models.User.getAll({ uri: _models[0].uri })[0];
+            var user = Models.User.getAll({ _uri: _models[0]._uri })[0];
             var spy = sinon.spy();
             user.listenTo('nameChange', spy );
             user.name = 'new name';
@@ -384,8 +384,8 @@ describe('model-integration', function() {
         });
         it('shares events between objects', function() {
             Models.User.resetCache();
-            var userInstance1 = Models.User.getAll({ filter : { uri: _models[0].uri }})[0];
-            var userInstance2 = Models.User.getAll({ filter: { uri: _models[0].uri }})[0];
+            var userInstance1 = Models.User.getAll({ filter : { _uri: _models[0]._uri }})[0];
+            var userInstance2 = Models.User.getAll({ filter: { _uri: _models[0]._uri }})[0];
             var spy = sinon.spy();
             userInstance1.listenTo('nameChange', spy );
             userInstance2.name = 'new name';
@@ -393,8 +393,8 @@ describe('model-integration', function() {
         });
         it('shares events between objects (with get method)', function() {
             Models.User.resetCache();
-            var userInstance1 = Models.User.get(_models[0].uri);
-            var userInstance2 = Models.User.getAll({ filter: { uri: _models[0].uri }})[0];
+            var userInstance1 = Models.User.get(_models[0]._uri);
+            var userInstance2 = Models.User.getAll({ filter: { _uri: _models[0]._uri }})[0];
             var spy = sinon.spy();
             userInstance1.listenTo('nameChange', function() {
                 spy();
@@ -416,13 +416,13 @@ describe('model-integration', function() {
                 active: true
             });
 
-            var data = LocalStorageAdapter.get('user', user.uri);
+            var data = LocalStorageAdapter.get('user', user._uri);
             expect(data.active, 'to be undefined');
 
-            user = Models.User.get(user.uri);
+            user = Models.User.get(user._uri);
             expect(user.active, 'to be true');
 
-            Models.User.remove(user.uri);
+            Models.User.remove(user._uri);
             Models.User = null;
         });
         it('assigns non persistent properties', function() {
@@ -438,10 +438,10 @@ describe('model-integration', function() {
             });
 
             Models.User.resetCache();
-            user = Models.User.get(user.uri);
+            user = Models.User.get(user._uri);
             expect(user.hasOwnProperty('active'), 'to be true');
 
-            Models.User.remove(user.uri);
+            Models.User.remove(user._uri);
             Models.User = null;
         });
         it('assigns default value to persistent properties', function() {
@@ -457,10 +457,10 @@ describe('model-integration', function() {
             });
 
             Models.User.resetCache();
-            user = Models.User.get(user.uri);
+            user = Models.User.get(user._uri);
             expect(user.active, 'to equal', 'yes');
 
-            Models.User.remove(user.uri);
+            Models.User.remove(user._uri);
             Models.User = null;
         });
     });

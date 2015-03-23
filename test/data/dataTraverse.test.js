@@ -5,7 +5,7 @@ describe('dataTraverse', function() {
     describe('flattenNestedObject', function() {
         it('can resolve nested objects', function() {
             var result = DataTraverse.flattenNestedObjects({ tasks: {name: 'tasks', array: true}}, {
-                tasks: [ {uri: '/uri/1'}, {uri: '/uri/2'}]
+                tasks: [ {_uri: '/uri/1'}, {_uri: '/uri/2'}]
             });
             expect(result, 'to equal', {tasks: ['/uri/1','/uri/2']});
         });
@@ -16,11 +16,11 @@ describe('dataTraverse', function() {
             var result = DataTraverse.resolveNestedObjects({ tasks: {name: 'tasks', array: true}}, {
                 tasks: ['/uri/1', '/uri/2']
             }, function(type, uri) {
-                return {uri: uri};
+                return {_uri: uri};
             });
 
             expect(result, 'to equal',  {
-                tasks: [{uri: '/uri/1'}, {uri: '/uri/2'}]
+                tasks: [{_uri: '/uri/1'}, {_uri: '/uri/2'}]
             });
         });
     });

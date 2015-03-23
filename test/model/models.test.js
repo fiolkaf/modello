@@ -35,7 +35,7 @@ describe('models', function() {
         it('can create a new defined model', function() {
             Models.define('person', {});
             var person = new Models.Person({
-                uri: '/persons/1',
+                _uri: '/persons/1',
                 firstname: 'Filip',
                 surname: 'Fiolka'
             });
@@ -93,7 +93,7 @@ describe('models', function() {
                 }
             });
             var person = Models.Person({
-                uri: '/persons/1',
+                _uri: '/persons/1',
                 name: 'Filip'
             });
             expect(person.name, 'to equal', 'Filip');
@@ -117,10 +117,10 @@ describe('models', function() {
                 name: null
             });
             var tour = Models.Tour({
-                uri: '/tours/1',
+                _uri: '/tours/1',
                 taskChanged: false,
                 task: {
-                    uri: '/tasks/1',
+                    _uri: '/tasks/1',
                     name: 'my task'
                 }
             });

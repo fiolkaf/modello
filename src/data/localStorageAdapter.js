@@ -55,13 +55,13 @@ var LocalStorageAdapter = {
     update: function(type, uri, data) {
         data = JSON.parse(JSON.stringify(data));
         data = DataTraverse.flattenNestedObjects(getTypeProperties(type), data);
-        localStorage.setItem(keyFromUri(type, data.uri), JSON.stringify(data));
+        localStorage.setItem(keyFromUri(type, data._uri), JSON.stringify(data));
     },
 
     save: function(type, data) {
         data = JSON.parse(JSON.stringify(data));
         data = DataTraverse.flattenNestedObjects(getTypeProperties(type), data);
-        localStorage.setItem(keyFromUri(type, data.uri), JSON.stringify(data));
+        localStorage.setItem(keyFromUri(type, data._uri), JSON.stringify(data));
     }
 };
 

@@ -42,7 +42,7 @@ function ModelFactory(models, type, definition) {
                 return !typedProperties[key];
             })
             .forEach(function(key) {
-                if (key === 'uri' && data[key] === model[key]) {
+                if (key === '_uri' && data[key] === model[key]) {
                     return;
                 }
 
@@ -119,7 +119,7 @@ function ModelFactory(models, type, definition) {
         if (!Constructor.update) {
             return;
         }
-        var result = Constructor.update(model.uri, model, changes) || {};
+        var result = Constructor.update(model._uri, model, changes) || {};
         if (result.then) {
             model.dataReady = result;
             return model.dataReady;
@@ -134,7 +134,7 @@ function ModelFactory(models, type, definition) {
                 return change.property;
             })
             .filter(function(name) {
-                return ['id', 'uri'].indexOf(name) < 0;
+                return ['id', '_uri'].indexOf(name) < 0;
             }).length;
     }
 
@@ -148,7 +148,7 @@ function ModelFactory(models, type, definition) {
         this.Type = _typeDefinition;
 
         var modelData = getModelTemplate();
-        modelData.uri = data && data.uri ? data.uri : '/' + type + '/' + uuid();
+        modelData._uri = data && data._uri ? data._uri : '/' + type + '/' + uuid();
         var _this = new RemoteObject(modelData);
 
         var dataReady;
@@ -183,7 +183,7 @@ function ModelFactory(models, type, definition) {
 
         addFunctions(_this);
 
-        if (data && Object.keys(data).filter(function(key) { return key !== 'uri'; }).length > 0) {
+        if (data && Object.keys(data).filter(function(key) { return key !== '_uri'; }).length > 0) {
             _this.data(data);
         }
 

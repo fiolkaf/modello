@@ -6,7 +6,7 @@ describe('localStorageAdapter', function() {
     it('can save and retrieve simple data', function() {
         Models.define('test');
         var data = {
-            uri: '/test/1',
+            _uri: '/test/1',
             property: true,
             array: [{property: false}]
         };
@@ -26,15 +26,15 @@ describe('localStorageAdapter', function() {
         });
 
         var modelLevel2 = {
-            uri: '/test/level2',
+            _uri: '/test/level2',
             object: true
         };
         var modelLevel1 = {
-            uri: '/test/level1',
+            _uri: '/test/level1',
             object: modelLevel2
         };
         var model = {
-            uri: '/test/level0',
+            _uri: '/test/level0',
             object: modelLevel1
         };
 
@@ -70,37 +70,37 @@ describe('localStorageAdapter', function() {
         });
 
         var modelLevel20 = {
-            uri: 'modelLevel20',
+            _uri: 'modelLevel20',
             property: true
         };
 
         var modelLevel21 = {
-            uri: 'modelLevel21',
+            _uri: 'modelLevel21',
             property: true
         };
 
         var modelLevel22= {
-            uri: 'modelLevel22',
+            _uri: 'modelLevel22',
             property: true
         };
 
         var modelLevel23 = {
-            uri: 'modelLevel23',
+            _uri: 'modelLevel23',
             property: true
         };
 
         var modelLevel10 = {
-            uri: 'modelLevel10',
+            _uri: 'modelLevel10',
             array: [ modelLevel20, modelLevel21 ]
         };
 
         var modelLevel11 = {
-            uri: 'modelLevel11',
+            _uri: 'modelLevel11',
             array: [ modelLevel22, modelLevel23 ]
         };
 
         var model = {
-            uri: 'model',
+            _uri: 'model',
             array: [ modelLevel10, modelLevel11 ]
         };
 
@@ -129,22 +129,22 @@ describe('localStorageAdapter', function() {
         Models.define('user');
         var users = [
             {
-                uri: '1',
+                _uri: '1',
                 name: 'Filip',
                 surname: 'Smith'
             },
             {
-                uri: '2',
+                _uri: '2',
                 name: 'Filip',
                 surname: 'Brown'
             },
             {
-                uri: '3',
+                _uri: '3',
                 name: 'Adam',
                 surname: 'Brown'
             },
             {
-                uri: '4',
+                _uri: '4',
                 name: 'Adam',
                 surname: 'Jonson'
             }
@@ -161,7 +161,7 @@ describe('localStorageAdapter', function() {
         expect(result.length, 'to equal', 1);
 
         users.forEach(function(user) {
-            LocalStorageAdapter.remove('user', user.uri);
+            LocalStorageAdapter.remove('user', user._uri);
         });
         Models.User = null;
     });

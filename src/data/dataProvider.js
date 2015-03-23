@@ -43,7 +43,7 @@ var DataProvider = function(type, dataAdapter) {
             return response;
         }
 
-        var model = createModel( { uri: uri });
+        var model = createModel( { _uri: uri });
         _cache[uri] = model;
 
         if (response instanceof Promise) {
@@ -70,8 +70,8 @@ var DataProvider = function(type, dataAdapter) {
 
         function getArray(data) {
             data.map(function(item) {
-                var model = _cache[item.uri] || createModel(null).data(item);
-                _cache[model.uri] = model;
+                var model = _cache[item._uri] || createModel(null).data(item);
+                _cache[model._uri] = model;
                 return model;
             }).forEach(function(item) {
                 result.push(item);
@@ -93,7 +93,7 @@ var DataProvider = function(type, dataAdapter) {
     };
 
     this.save = function(model) {
-        _cache[model.uri] = model;
+        _cache[model._uri] = model;
         var data = getDataForModel(model);
         return dataAdapter.save(type, data);
     };
@@ -109,7 +109,7 @@ var DataProvider = function(type, dataAdapter) {
     };
 
     this.addCache = function(uri, model) {
-        _cache[model.uri] = model;
+        _cache[model._uri] = model;
     };
 
     this.resetCache = function() {

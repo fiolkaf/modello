@@ -7,12 +7,12 @@ function flattenNestedObjects(properties, data) {
             return;
         }
         if (!properties[key].array) {
-            result[key] = result[key].uri;
+            result[key] = result[key]._uri;
             return;
         }
 
         result[key] = result[key].map(function(obj) {
-            return obj.uri ? obj.uri : obj;
+            return obj._uri ? obj._uri : obj;
         });
     });
 

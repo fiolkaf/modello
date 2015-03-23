@@ -138,7 +138,7 @@ describe('model-examples', function() {
 
             // You can specify uri property by yourself
             var myGarden = new Models.Garden({
-                uri: '/garden/myGarden'
+                _uri: '/garden/myGarden'
             });
             // Get you model using get method on the model
             var result = Models.Garden.get('/garden/myGarden');
@@ -152,8 +152,8 @@ describe('model-examples', function() {
             garden.pumpkins++;
 
             // remove your models with remove method
-            result = Models.Garden.remove(myGarden.uri);
-            result = Models.Garden.remove(garden.uri);
+            result = Models.Garden.remove(myGarden._uri);
+            result = Models.Garden.remove(garden._uri);
 
             result = Models.Garden.get('/garden/myGarden');
             expect(result, 'to be null');

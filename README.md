@@ -103,9 +103,9 @@ expect(garden.strawberries[0].color, 'to equal', 'red');
 #### Model events
 ```javascript
 garden = new Models.Garden();
-// Attach listener to 'pumpkins' property change 
+// Attach listener to 'pumpkins' property change
 garden.listenTo('pumpkinsChange', callback);
-// Attach a generic listener to any change in the model 
+// Attach a generic listener to any change in the model
 garden.listenTo('change', callback);
 garden.pumpkins++;
 ```
@@ -128,7 +128,7 @@ var garden = new Models.Garden();
 
 // You can specify uri property by yourself
 garden = new Models.Garden({
-    uri: '/garden/myGarden'
+    _uri: '/garden/myGarden'
 });
 
 // Get you model using get method on the model
@@ -139,16 +139,16 @@ result = Models.Garden.getAll( { pumpkins: 0 });
 
 // Model changes will be saved on each modification
 garden.pumpkins++;
-            
+
 // remove your models with remove method
-result = Models.Garden.remove(garden.uri);
+result = Models.Garden.remove(garden._uri);
 ```
 
 ##### Non persistent properties
 Use store modifier to exlude property from beeing stored:
 
 ```javascript
-Models.define('garden', { 
-    pumpkins: { store: false } 
+Models.define('garden', {
+    pumpkins: { store: false }
 });
 ```
