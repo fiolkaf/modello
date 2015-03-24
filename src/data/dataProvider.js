@@ -48,6 +48,9 @@ var DataProvider = function(type, dataAdapter) {
 
         if (response instanceof Promise) {
             response.then(function(data) {
+                if (data._uri) {
+                    delete data._uri; //Do not overwrite uri
+                }
                 model.data(data);
             }, function(err) {
                 console.log('Error', err);
