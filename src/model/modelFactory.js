@@ -183,7 +183,7 @@ function ModelFactory(models, type, definition) {
 
         addFunctions(_this);
 
-        if (data && Object.keys(data).filter(function(key) { return key !== '_uri'; }).length > 0) {
+        if (data && options.save) {
             _this.data(data);
         }
 
