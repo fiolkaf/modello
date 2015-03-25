@@ -61,7 +61,6 @@ describe('dataProvider test', function() {
         var provider = getProvider('garden');
         var model = provider.data.get();
         expect(model.hasOwnProperty('property'), 'to be true');
-
         provider.resolve({
             property: true,
             flowers: [ { type: 'tulipan' }, { type : 'hiacynt' }],
