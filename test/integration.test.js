@@ -464,4 +464,41 @@ describe('model-integration', function() {
             Models.User = null;
         });
     });
+    describe.only('updates', function() {
+        it('it calls update when array item change', function() {
+            var Incident = Models.define('incident', {
+                links: { array: true}
+            });
+            LocalStorageAdapter.register('incident');
+
+            var myIncident = new Incident({
+                _uri: '/incidents/test'
+            });
+
+            myIncident.links.push({
+                title: 'MyLink',
+                url: 'www.mylink.com'
+            })
+
+            myIncident.links[0].title = 'hello world v2';
+            myIncident.links[0].url = 'www.mylink.v2.com';
+
+            myIncident.dispose();
+            Incident.resetCache();
+            myIncident = Incident.get('/incidents/test');
+            expect(myIncident.links[0].title, 'to equal', 'hello world v2');
+            expect(myIncident.links[0].url, 'to equal', 'www.mylink.v2.com');
+
+            myIncident.links[0].title = 'hello world v3';
+            myIncident.links[0].url = 'www.mylink.v3.com';
+
+            myIncident.dispose();
+            Incident.resetCache();
+            myIncident = Incident.get('/incidents/test');
+            expect(myIncident.links[0].title, 'to equal', 'hello world v3');
+            expect(myIncident.links[0].url, 'to equal', 'www.mylink.v3.com');
+
+            Incident.remove('/incidents/test');
+        });
+    });
 });
