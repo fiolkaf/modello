@@ -464,7 +464,7 @@ describe('model-integration', function() {
             Models.User = null;
         });
     });
-    describe.only('updates', function() {
+    describe('updates', function() {
         it('it calls update when array item change', function() {
             var Incident = Models.define('incident', {
                 links: { array: true}
@@ -478,7 +478,7 @@ describe('model-integration', function() {
             myIncident.links.push({
                 title: 'MyLink',
                 url: 'www.mylink.com'
-            })
+            });
 
             myIncident.links[0].title = 'hello world v2';
             myIncident.links[0].url = 'www.mylink.v2.com';
