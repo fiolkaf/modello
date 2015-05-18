@@ -499,6 +499,42 @@ describe('model-integration', function() {
             expect(myIncident.links[0].url, 'to equal', 'www.mylink.v3.com');
 
             Incident.remove('/incidents/test');
+            Models.Incident = null;
+        });
+        it('can commit multiple changes on nested objects', function(done) {
+            var Link = Models.define('link', {
+                text: {},
+                href: {}
+            });
+            LocalStorageAdapter.register('link');
+
+            var Incident = Models.define('incident', {
+                links: { array: true, type: 'link' }
+            });
+            LocalStorageAdapter.register('incident');
+
+            var myIncident = new Incident({
+                _uri: '/incidents/1',
+                links: [{
+                    _uri: '/links/1',
+                    text: 'First link',
+                    href: 'www.link.dk'
+                }]
+            });
+
+            myIncident.links[0].on('changed', function(changes) {
+                expect(changes[0].property, 'to equal', 'text');
+                expect(changes[1].property, 'to equal', 'href');
+                myIncident.dispose();
+                Models.Link = null;
+                Models.Incident = null;
+                done();
+            });
+
+            myIncident.links[0].startChanges();
+            myIncident.links[0].text = 'text1';
+            myIncident.links[0].href = 'href1';
+            myIncident.links[0].commitChanges();
         });
     });
 });
